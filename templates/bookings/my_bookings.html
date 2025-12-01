@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}My Bookings - FlyNova{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h2 class="mb-4">My Bookings</h2>
+
+    {% if bookings %}
+    <div class="table-responsive">
+        <table class="table table-hover shadow-sm">
+            <thead class="table-light">
+                <tr>
+                    <th>ID</th>
+                    <th>Service</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Price</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for booking in bookings %}
+                <tr>
+                    <td>#{{ booking.id }}</td>
+                    <td>{{ booking.content_object }}</td>
+                    <td>{{ booking.booking_date|date:"M d, Y" }}</td>
+                    <td>
+                        <span class="badge bg-success">{{ booking.status }}</span>
+                    </td>
+                    <td>BDT {{ booking.total_price|floatformat:0 }}</td>
+                    <td>
+                        <a href="{% url 'print_ticket' booking.id %}" class="btn btn-sm btn-outline-primary me-1"
+                            target="_blank">
+                            <i class="fas fa-print"></i> Print
+                        </a>
+                        <a href="{% url 'download_ticket_pdf' booking.id %}" class="btn btn-sm btn-primary">
+                            <i class="fas fa-download"></i> PDF
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        You haven't made any bookings yet. <a href="{% url 'home' %}">Start exploring!</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

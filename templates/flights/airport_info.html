@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block title %}Airport Information - FlyNova{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h2 class="mb-4">🛬 Real-Time Airport Information</h2>
+    <p class="lead">Live flight arrival information for all airports</p>
+
+    {% for airport_data in airports_with_arrivals %}
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">{{ airport_data.airport.name }} ({{ airport_data.airport.code }})</h4>
+            <small>{{ airport_data.airport.city }}, {{ airport_data.airport.country }}</small>
+        </div>
+        <div class="card-body">
+            {% if airport_data.arrivals %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Flight Number</th>
+                            <th>Airline</th>
+                            <th>From</th>
+                            <th>Scheduled Arrival</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for flight in airport_data.arrivals %}
+                        <tr>
+                            <td><strong>{{ flight.flight_number }}</strong></td>
+                            <td>
+                                {% if flight.airline.logo %}
+                                <img src="{{ flight.airline.logo.url }}" alt="{{ flight.airline.name }}"
+                                    style="height: 30px;" class="me-2">
+                                {% endif %}
+                                {{ flight.airline.name }}
+                            </td>
+                            <td>
+                                <strong>{{ flight.origin.code }}</strong> - {{ flight.origin.city }}
+                            </td>
+                            <td>
+                                <strong>{{ flight.arrival_time|date:"d M, Y" }}</strong><br>
+                                <span class="text-primary">{{ flight.arrival_time|date:"H:i" }}</span>
+                            </td>
+                            <td>
+                                {% if flight.status == 'Landed' %}
+                                <span class="badge bg-success">✓ Landed</span>
+                                {% elif flight.status == 'Delayed' %}
+                                <span class="badge bg-warning text-dark">⚠ Delayed</span>
+                                {% else %}
+                                <span class="badge bg-info">✈ On Time</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-muted text-center py-3">No upcoming arrivals in the next 24 hours</p>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+
+    {% if not airports_with_arrivals %}
+    <div class="alert alert-info text-center">
+        <h4>No airport data available</h4>
+        <p>No airports or flights found in the system.</p>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    // Auto-refresh page every 60 seconds for real-time updates
+    setTimeout(function () {
+        location.reload();
+    }, 60000);
+</script>
+
+<style>
+    .table th {
+        border-top: none;
+    }
+
+    .card-header h4 {
+        font-size: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+        .table {
+            font-size: 0.85rem;
+        }
+    }
+</style>
+{% endblock %}

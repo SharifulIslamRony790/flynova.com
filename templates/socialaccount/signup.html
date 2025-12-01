@@ -1,0 +1,345 @@
+{% extends 'base.html' %}
+
+{% block title %}Complete Your Profile - FlyNova{% endblock %}
+
+{% block content %}
+<div class="oauth-container">
+    <div class="oauth-card">
+        <div class="oauth-header">
+            <div class="success-animation">
+                <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                    <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none" />
+                    <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+                </svg>
+            </div>
+            <h2 class="oauth-title">Welcome to FlyNova!</h2>
+            <p class="oauth-subtitle">You're almost there. Let's complete your profile.</p>
+        </div>
+
+        <form method="post" action="{% url 'socialaccount_signup' %}" class="oauth-form">
+            {% csrf_token %}
+
+            <div class="profile-info">
+                <div class="info-card">
+                    <i class="fas fa-envelope info-icon"></i>
+                    <div>
+                        <label class="info-label">Email Address</label>
+                        <p class="info-value">{{ form.email.value|default:account.email }}</p>
+                    </div>
+                </div>
+
+                {% if form.email %}
+                {{ form.email.as_hidden }}
+                {% endif %}
+            </div>
+
+            {% if form.username %}
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-user"></i> Choose a Username
+                </label>
+                <input type="text" name="username" class="form-control modern-input"
+                    value="{{ form.username.value|default:'' }}" placeholder="Enter your username" required>
+                {% if form.username.errors %}
+                <div class="error-message">{{ form.username.errors.0 }}</div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            {% if redirect_field_value %}
+            <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+            {% endif %}
+
+            <div class="form-actions">
+                <button type="submit" class="btn-continue">
+                    <span>Continue to FlyNova</span>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+
+            <p class="terms-text">
+                By continuing, you agree to FlyNova's
+                <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+            </p>
+        </form>
+    </div>
+</div>
+
+<style>
+    .oauth-container {
+        min-height: 85vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 20px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .oauth-container::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+        animation: rotate 20s linear infinite;
+    }
+
+    @keyframes rotate {
+        from {
+            transform: rotate(0deg);
+        }
+
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    .oauth-card {
+        background: white;
+        border-radius: 24px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        max-width: 500px;
+        width: 100%;
+        padding: 48px 40px;
+        position: relative;
+        z-index: 1;
+        animation: slideUp 0.6s ease-out;
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .oauth-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .success-animation {
+        margin-bottom: 24px;
+    }
+
+    .checkmark {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto;
+        animation: scaleIn 0.6s ease-out;
+    }
+
+    @keyframes scaleIn {
+        0% {
+            transform: scale(0);
+            opacity: 0;
+        }
+
+        50% {
+            transform: scale(1.1);
+        }
+
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    .checkmark-circle {
+        stroke: #4CAF50;
+        stroke-width: 2;
+        stroke-dasharray: 166;
+        stroke-dashoffset: 166;
+        animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+    }
+
+    @keyframes stroke {
+        100% {
+            stroke-dashoffset: 0;
+        }
+    }
+
+    .checkmark-check {
+        stroke: #4CAF50;
+        stroke-width: 3;
+        stroke-linecap: round;
+        stroke-dasharray: 48;
+        stroke-dashoffset: 48;
+        animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.4s forwards;
+    }
+
+    .oauth-title {
+        font-size: 32px;
+        font-weight: 700;
+        color: #1a1a2e;
+        margin: 0 0 12px 0;
+    }
+
+    .oauth-subtitle {
+        font-size: 16px;
+        color: #666;
+        margin: 0;
+    }
+
+    .profile-info {
+        margin-bottom: 32px;
+    }
+
+    .info-card {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        border-radius: 16px;
+        padding: 20px 24px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        border: 2px solid #e0e7ff;
+    }
+
+    .info-icon {
+        font-size: 24px;
+        color: #667eea;
+        min-width: 24px;
+    }
+
+    .info-label {
+        display: block;
+        font-size: 12px;
+        color: #666;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 4px;
+    }
+
+    .info-value {
+        font-size: 16px;
+        color: #1a1a2e;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .form-group {
+        margin-bottom: 24px;
+    }
+
+    .form-label {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+        color: #1a1a2e;
+        margin-bottom: 8px;
+    }
+
+    .form-label i {
+        color: #667eea;
+        margin-right: 8px;
+    }
+
+    .modern-input {
+        width: 100%;
+        padding: 14px 16px;
+        border: 2px solid #e0e7ff;
+        border-radius: 12px;
+        font-size: 15px;
+        transition: all 0.3s ease;
+        background: #f8f9ff;
+    }
+
+    .modern-input:focus {
+        outline: none;
+        border-color: #667eea;
+        background: white;
+        box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    }
+
+    .error-message {
+        color: #e74c3c;
+        font-size: 13px;
+        margin-top: 8px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .error-message::before {
+        content: '⚠';
+    }
+
+    .form-actions {
+        margin: 32px 0 24px 0;
+    }
+
+    .btn-continue {
+        width: 100%;
+        padding: 16px 32px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-continue:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+    }
+
+    .btn-continue i {
+        transition: transform 0.3s ease;
+    }
+
+    .btn-continue:hover i {
+        transform: translateX(4px);
+    }
+
+    .terms-text {
+        text-align: center;
+        font-size: 13px;
+        color: #999;
+        margin: 0;
+        line-height: 1.6;
+    }
+
+    .terms-text a {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .terms-text a:hover {
+        text-decoration: underline;
+    }
+
+    @media (max-width: 576px) {
+        .oauth-card {
+            padding: 32px 24px;
+        }
+
+        .oauth-title {
+            font-size: 26px;
+        }
+
+        .checkmark {
+            width: 64px;
+            height: 64px;
+        }
+    }
+</style>
+{% endblock %}

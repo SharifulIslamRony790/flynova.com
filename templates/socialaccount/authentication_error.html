@@ -1,0 +1,276 @@
+{% extends 'base.html' %}
+{% load socialaccount %}
+
+{% block title %}Authenticating... - FlyNova{% endblock %}
+
+{% block content %}
+<div class="auth-loading-container">
+    <div class="auth-loading-card">
+        <div class="loading-animation">
+            <div class="plane-container">
+                <i class="fas fa-plane plane-icon"></i>
+                <div class="cloud cloud-1"></div>
+                <div class="cloud cloud-2"></div>
+                <div class="cloud cloud-3"></div>
+            </div>
+        </div>
+
+        <h2 class="loading-title">Connecting with Google...</h2>
+        <p class="loading-subtitle">Please wait while we securely authenticate your account</p>
+
+        <div class="loading-bar">
+            <div class="loading-progress"></div>
+        </div>
+
+        <div class="security-badges">
+            <div class="badge">
+                <i class="fas fa-shield-alt"></i>
+                <span>Secure</span>
+            </div>
+            <div class="badge">
+                <i class="fas fa-lock"></i>
+                <span>Encrypted</span>
+            </div>
+            <divclass="badge">
+                <i class="fas fa-check-double"></i>
+                <span>Verified</span>
+        </div>
+    </div>
+</div>
+</div>
+
+<style>
+    .auth-loading-container {
+        min-height: 85vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .auth-loading-container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background:
+            radial-gradient(circle at 30% 40%, rgba(255, 255, 255, 0.05) 0%, transparent 50%),
+            radial-gradient(circle at 70% 60%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+        animation: backgroundShift 15s ease-in-out infinite;
+    }
+
+    @keyframes backgroundShift {
+
+        0%,
+        100% {
+            transform: translate(0, 0);
+        }
+
+        50% {
+            transform: translate(20px, 20px);
+        }
+    }
+
+    .auth-loading-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 24px;
+        box-shadow: 0 25px 70px rgba(0, 0, 0, 0.3);
+        max-width: 500px;
+        width: 100%;
+        padding: 60px 40px;
+        text-align: center;
+        position: relative;
+        z-index: 1;
+        animation: cardFloat 0.8s ease-out;
+    }
+
+    @keyframes cardFloat {
+        from {
+            opacity: 0;
+            transform: scale(0.9) translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+    }
+
+    .loading-animation {
+        margin-bottom: 40px;
+        height: 120px;
+        position: relative;
+    }
+
+    .plane-container {
+        position: relative;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .plane-icon {
+        font-size: 48px;
+        color: #2c7a9e;
+        animation: planeFly 3s ease-in-out infinite;
+        z-index: 2;
+        position: relative;
+    }
+
+    @keyframes planeFly {
+
+        0%,
+        100% {
+            transform: translateX(-20px) translateY(0) rotate(-5deg);
+        }
+
+        50% {
+            transform: translateX(20px) translateY(-10px) rotate(5deg);
+        }
+    }
+
+    .cloud {
+        position: absolute;
+        background: linear-gradient(135deg, #e8f4f8 0%, #d4e9f2 100%);
+        border-radius: 50px;
+        opacity: 0.6;
+    }
+
+    .cloud-1 {
+        width: 80px;
+        height: 30px;
+        top: 20%;
+        left: 10%;
+        animation: cloudFloat 8s ease-in-out infinite;
+    }
+
+    .cloud-2 {
+        width: 100px;
+        height: 35px;
+        top: 60%;
+        right: 5%;
+        animation: cloudFloat 10s ease-in-out infinite reverse;
+    }
+
+    .cloud-3 {
+        width: 60px;
+        height: 25px;
+        bottom: 20%;
+        left: 20%;
+        animation: cloudFloat 12s ease-in-out infinite;
+    }
+
+    @keyframes cloudFloat {
+
+        0%,
+        100% {
+            transform: translateX(0);
+        }
+
+        50% {
+            transform: translateX(30px);
+        }
+    }
+
+    .loading-title {
+        font-size: 28px;
+        font-weight: 700;
+        color: #1a1a2e;
+        margin: 0 0 12px 0;
+    }
+
+    .loading-subtitle {
+        font-size: 15px;
+        color: #666;
+        margin: 0 0 32px 0;
+    }
+
+    .loading-bar {
+        width: 100%;
+        height: 6px;
+        background: #e0e7ff;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 40px;
+    }
+
+    .loading-progress {
+        height: 100%;
+        background: linear-gradient(90deg, #2c7a9e 0%, #3da5d9 100%);
+        border-radius: 10px;
+        animation: progressBar 2s ease-in-out infinite;
+    }
+
+    @keyframes progressBar {
+        0% {
+            width: 0%;
+        }
+
+        50% {
+            width: 70%;
+        }
+
+        100% {
+            width: 100%;
+        }
+    }
+
+    .security-badges {
+        display: flex;
+        justify-content: center;
+        gap: 24px;
+        flex-wrap: wrap;
+    }
+
+    .badge {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 20px;
+        background: linear-gradient(135deg, #f5f7fa 0%, #e8eef5 100%);
+        border-radius: 12px;
+        border: 2px solid #d0dae8;
+    }
+
+    .badge i {
+        font-size: 24px;
+        color: #2c7a9e;
+    }
+
+    .badge span {
+        font-size: 12px;
+        font-weight: 600;
+        color: #555;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    @media (max-width: 576px) {
+        .auth-loading-card {
+            padding: 40px 24px;
+        }
+
+        .security-badges {
+            gap: 12px;
+        }
+
+        .badge {
+            padding: 8px 12px;
+        }
+    }
+</style>
+
+<script>
+    // Auto-redirect simulation (in real scenario, OAuth handles this)
+    setTimeout(() => {
+        console.log('OAuth flow in progress...');
+    }, 2000);
+</script>
+{% endblock %}

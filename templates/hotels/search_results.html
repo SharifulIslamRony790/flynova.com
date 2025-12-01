@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+
+{% block title %}Hotel Results - FlyNova{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <!-- Sidebar Filters -->
+        <div class="col-md-3">
+            <div class="card shadow-sm p-3 mb-4">
+                <h5>Filter Results</h5>
+                <div class="mb-3">
+                    <label class="form-label">Price Range</label>
+                    <div class="btn-group-vertical w-100" role="group">
+                        <a href="?{% if request.GET.city %}city={{ request.GET.city }}&{% endif %}price_range=low"
+                            class="btn btn-outline-primary {% if request.GET.price_range == 'low' %}active{% endif %}">Low
+                            (&lt; 10k)</a>
+                        <a href="?{% if request.GET.city %}city={{ request.GET.city }}&{% endif %}price_range=mid"
+                            class="btn btn-outline-primary {% if request.GET.price_range == 'mid' %}active{% endif %}">Mid
+                            (10k-50k)</a>
+                        <a href="?{% if request.GET.city %}city={{ request.GET.city }}&{% endif %}price_range=high"
+                            class="btn btn-outline-primary {% if request.GET.price_range == 'high' %}active{% endif %}">High
+                            (&gt; 50k)</a>
+                    </div>
+                    {% if request.GET.price_range %}
+                    <a href="?{% if request.GET.city %}city={{ request.GET.city }}{% endif %}"
+                        class="btn btn-sm btn-link text-danger mt-1">Clear Filter</a>
+                    {% endif %}
+                </div>
+                <form action="{% url 'search_hotels' %}" method="GET">
+                    {% if request.GET.price_range %}
+                    <input type="hidden" name="price_range" value="{{ request.GET.price_range }}">
+                    {% endif %}
+                    <div class="mb-3">
+                        <label class="form-label">Location</label>
+                        <input type="text" name="city" class="form-control" value="{{ city_query|default:'' }}"
+                            placeholder="e.g. Cox's Bazar">
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Search</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Hotel List -->
+        <div class="col-md-9">
+            <h3 class="mb-4">Hotels in {{ city_query|default:"Bangladesh" }}</h3>
+
+            {% if hotels %}
+            {% for hotel in hotels %}
+            <div class="card mb-4 shadow-sm border-0">
+                <div class="row g-0">
+                    <div class="col-md-4">
+                        {% if hotel.image %}
+                        <img src="{{ hotel.image.url }}" class="img-fluid rounded-start h-100" alt="{{ hotel.name }}"
+                            style="object-fit: cover; min-height: 200px;">
+                        {% else %}
+                        <img src="https://placehold.co/400x300?text=Hotel" class="img-fluid rounded-start h-100"
+                            style="object-fit: cover; min-height: 200px;">
+                        {% endif %}
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body d-flex flex-column h-100">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h4 class="card-title text-primary mb-1">{{ hotel.name }}</h4>
+                                    <p class="text-muted small mb-2"><i class="fas fa-map-marker-alt"></i> {{
+                                        hotel.address }}, {{ hotel.city }}</p>
+                                    <div class="mb-2">
+                                        {% for i in "12345"|make_list %}
+                                        {% if forloop.counter <= hotel.star_rating %} <i
+                                            class="fas fa-star text-warning small"></i>
+                                            {% else %}
+                                            <i class="far fa-star text-warning small"></i>
+                                            {% endif %}
+                                            {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="text-end">
+                                    <span class="badge bg-success">Very Good</span>
+                                    <small class="d-block text-muted">120 reviews</small>
+                                </div>
+                            </div>
+
+                            <p class="card-text text-secondary flex-grow-1">{{ hotel.description|truncatechars:150 }}
+                            </p>
+
+                            <div class="d-flex justify-content-between align-items-end mt-3">
+                                <div>
+                                    {% with room=hotel.rooms.first %}
+                                    {% if room %}
+                                    <small class="text-muted">Starts from</small>
+                                    <h3 class="text-dark mb-0">BDT {{ room.price_per_night }}</h3>
+                                    <small class="text-muted">per night</small>
+                                    {% endif %}
+                                    {% endwith %}
+                                </div>
+                                <div>
+                                    {% with room=hotel.rooms.first %}
+                                    {% if room %}
+                                    <a href="{% url 'create_booking' 'hotel' room.id %}"
+                                        class="btn btn-primary btn-lg px-4">Select Room</a>
+                                    {% else %}
+                                    <button class="btn btn-secondary" disabled>Sold Out</button>
+                                    {% endif %}
+                                    {% endwith %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <div class="alert alert-warning text-center p-5">
+                <h4><i class="fas fa-search me-2"></i>No hotels found</h4>
+                <p>Try changing your destination or filters.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

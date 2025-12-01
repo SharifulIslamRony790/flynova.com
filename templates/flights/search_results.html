@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+
+{% block title %}Flight Results - FlyNova{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h2 class="mb-4">Flight Search Results</h2>
+
+    <div class="card mb-4 p-3 bg-light">
+        <form action="{% url 'search_flights' %}" method="GET" class="row g-3">
+            <div class="col-md-3">
+                <input type="text" name="origin" class="form-control" placeholder="From"
+                    value="{{ origin_query|default:'' }}">
+            </div>
+            <div class="col-md-3">
+                <input type="text" name="destination" class="form-control" placeholder="To"
+                    value="{{ destination_query|default:'' }}">
+            </div>
+            <div class="col-md-2">
+                <input type="date" name="date" class="form-control" value="{{ date_query|default:'' }}">
+            </div>
+            <div class="col-md-2">
+                <input type="number" name="passengers" class="form-control" placeholder="Passengers" min="1"
+                    value="{{ passengers|default:'1' }}">
+            </div>
+            <div class="col-md-2 d-grid">
+                <button type="submit" class="btn btn-primary">Update Search</button>
+            </div>
+        </form>
+    </div>
+
+    {% if flights %}
+    <!-- Price Filter Buttons -->
+    <div class="card mb-3 p-3">
+        <h6 class="mb-3"><strong>Filter by Price:</strong></h6>
+        <div class="btn-group" role="group">
+            <a href="?origin={{ origin_query|default:'' }}&destination={{ destination_query|default:'' }}&date={{ date_query|default:'' }}&passengers={{ passengers }}&price_filter=all"
+                class="btn {% if price_filter == 'all' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                All Prices
+            </a>
+            <a href="?origin={{ origin_query|default:'' }}&destination={{ destination_query|default:'' }}&date={{ date_query|default:'' }}&passengers={{ passengers }}&price_filter=low"
+                class="btn {% if price_filter == 'low' %}btn-success{% else %}btn-outline-success{% endif %}">
+                💰 Low
+            </a>
+            <a href="?origin={{ origin_query|default:'' }}&destination={{ destination_query|default:'' }}&date={{ date_query|default:'' }}&passengers={{ passengers }}&price_filter=mid"
+                class="btn {% if price_filter == 'mid' %}btn-warning{% else %}btn-outline-warning{% endif %}">
+                💰💰 Mid
+            </a>
+            <a href="?origin={{ origin_query|default:'' }}&destination={{ destination_query|default:'' }}&date={{ date_query|default:'' }}&passengers={{ passengers }}&price_filter=high"
+                class="btn {% if price_filter == 'high' %}btn-danger{% else %}btn-outline-danger{% endif %}">
+                💰💰💰 High
+            </a>
+        </div>
+        {% if price_filter != 'all' %}
+        <small class="text-muted mt-2 d-block">
+            Showing {{ price_filter }} price flights
+            {% if price_categories.low %}
+            (Low: up to BDT {{ price_categories.low|floatformat:0 }},
+            Mid: BDT {{ price_categories.low|floatformat:0 }} - {{ price_categories.mid|floatformat:0 }},
+            High: above BDT {{ price_categories.mid|floatformat:0 }})
+            {% endif %}
+        </small>
+        {% endif %}
+    </div>
+
+    <div class="alert alert-info mb-3">
+        <strong>Showing prices for {{ passengers }} passenger{{ passengers|pluralize }}</strong>
+    </div>
+    <div class="row">
+        {% for flight in flights %}
+        <div class="col-12 mb-3">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-2 text-center">
+                            {% if flight.airline.logo %}
+                            <img src="{{ flight.airline.logo.url }}" alt="{{ flight.airline.name }}" class="img-fluid"
+                                style="max-height: 50px;">
+                            {% else %}
+                            <h5 class="text-primary">{{ flight.airline.name }}</h5>
+                            {% endif %}
+                            <small class="text-muted">{{ flight.flight_number }}</small>
+                        </div>
+                        <div class="col-md-2 text-center">
+                            <div class="mb-1">
+                                <strong class="text-primary">{{ flight.departure_time|date:"d M, Y" }}</strong>
+                            </div>
+                            <h4>{{ flight.departure_time|date:"H:i" }}</h4>
+                            <p class="mb-0"><strong>{{ flight.origin.code }}</strong></p>
+                            <small class="text-muted">{{ flight.origin.city }}</small>
+                        </div>
+                        <div class="col-md-2 text-center">
+                            <div class="text-muted mb-1"><i class="fas fa-plane"></i></div>
+                            <small class="text-muted d-block">Duration</small>
+                            <strong>1h 30m</strong>
+                            <small class="d-block text-success">Non-stop</small>
+                        </div>
+                        <div class="col-md-2 text-center">
+                            <div class="mb-1">
+                                <strong class="text-primary">{{ flight.arrival_time|date:"d M, Y" }}</strong>
+                            </div>
+                            <h4>{{ flight.arrival_time|date:"H:i" }}</h4>
+                            <p class="mb-0"><strong>{{ flight.destination.code }}</strong></p>
+                            <small class="text-muted">{{ flight.destination.city }}</small>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            {% if flight.num_passengers > 1 %}
+                            <h3 class="text-primary mb-0">BDT {{ flight.total_price|floatformat:0 }}</h3>
+                            <p class="text-muted small mb-0">Total for {{ flight.num_passengers }} passengers</p>
+                            <small class="text-muted">(BDT {{ flight.price|floatformat:0 }} per person)</small>
+                            {% else %}
+                            <h3 class="text-primary mb-0">BDT {{ flight.price|floatformat:0 }}</h3>
+                            <p class="text-muted small">per person</p>
+                            {% endif %}
+                            <a href="{% url 'create_booking' 'flight' flight.id %}" class="btn btn-primary mt-2">Select
+                                Flight</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info text-center">
+        <h4>No flights found.</h4>
+        <p>Try changing your search criteria.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

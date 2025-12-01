@@ -1,0 +1,505 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - FlyNova{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+    }
+
+    .hero-section {
+        background: linear-gradient(135deg, #4a90e2 0%, #63b3ed 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        padding: 40px 20px;
+    }
+
+    .hero-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=1920') center/cover;
+        opacity: 0.3;
+        z-index: 0;
+    }
+
+    .search-container {
+        position: relative;
+        z-index: 1;
+        max-width: 1200px;
+        width: 100%;
+    }
+
+    .search-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 40px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        position: relative;
+        overflow: visible;
+    }
+
+    .brand-title {
+        color: #2c7a9e;
+        font-size: 0.9rem;
+        font-weight: 600;
+        letter-spacing: 2px;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+    }
+
+    .main-heading {
+        color: #2c7a9e;
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 30px;
+        line-height: 1.2;
+    }
+
+    .trip-toggle {
+        display: inline-flex;
+        gap: 20px;
+        margin-bottom: 25px;
+    }
+
+    .trip-toggle label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        font-weight: 500;
+        color: #333;
+    }
+
+    .trip-toggle input[type="radio"] {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+    }
+
+    .input-with-icon {
+        position: relative;
+    }
+
+    .input-with-icon select,
+    .input-with-icon input {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.3s;
+    }
+
+    .input-with-icon select:focus,
+    .input-with-icon input:focus {
+        outline: none;
+        border-color: #2c7a9e;
+    }
+
+    .input-with-icon .calendar-icon {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #2c7a9e;
+        pointer-events: none;
+    }
+
+    .swap-icon {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        border: 2px solid #2c7a9e;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #2c7a9e;
+        font-size: 1.2rem;
+        z-index: 10;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .swap-icon:hover {
+        background: #2c7a9e;
+        color: white;
+        transform: translate(-50%, -50%) rotate(180deg);
+    }
+
+    .search-btn {
+        background: linear-gradient(135deg, #2c7a9e 0%, #3da5d9 100%);
+        color: white;
+        border: none;
+        padding: 15px 40px;
+        border-radius: 8px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        width: 100%;
+        cursor: pointer;
+        transition: all 0.3s;
+        box-shadow: 0 4px 15px rgba(44, 122, 158, 0.3);
+    }
+
+    .search-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(44, 122, 158, 0.4);
+    }
+
+    .destinations-section {
+        margin-top: 40px;
+    }
+
+    .destinations-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .destinations-header h3 {
+        color: #333;
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .carousel-controls {
+        display: flex;
+        gap: 10px;
+    }
+
+    .carousel-btn {
+        background: white;
+        border: 2px solid #e0e0e0;
+        border-radius: 50%;
+        width: 35px;
+        height: 35px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .carousel-btn:hover {
+        border-color: #2c7a9e;
+        color: #2c7a9e;
+    }
+
+    .destinations-carousel {
+        display: flex;
+        gap: 15px;
+        overflow-x: auto;
+        scroll-behavior: smooth;
+        padding-bottom: 10px;
+    }
+
+    .destinations-carousel::-webkit-scrollbar {
+        height: 6px;
+    }
+
+    .destinations-carousel::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+    }
+
+    .destinations-carousel::-webkit-scrollbar-thumb {
+        background: #2c7a9e;
+        border-radius: 10px;
+    }
+
+    .destination-card {
+        min-width: 200px;
+        height: 150px;
+        border-radius: 12px;
+        overflow: hidden;
+        position: relative;
+        cursor: pointer;
+        transition: transform 0.3s;
+    }
+
+    .destination-card:hover {
+        transform: scale(1.05);
+    }
+
+    .destination-card img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .destination-card .overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+        padding: 15px;
+        color: white;
+        font-weight: 600;
+    }
+
+    .airplane-image {
+        position: absolute;
+        right: -50px;
+        bottom: -50px;
+        width: 600px;
+        opacity: 0.9;
+        z-index: 2;
+        pointer-events: none;
+    }
+
+    .return-date-group {
+        display: none;
+    }
+
+    @media (max-width: 768px) {
+        .main-heading {
+            font-size: 1.8rem;
+        }
+
+        .search-card {
+            padding: 25px;
+        }
+
+        .airplane-image {
+            width: 300px;
+            right: -30px;
+            bottom: -30px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const returnRadio = document.getElementById('returnTrip');
+        const onewayRadio = document.getElementById('onewayTrip');
+        const returnDateGroup = document.getElementById('returnDateGroup');
+        const swapBtn = document.getElementById('swapBtn');
+        const originInput = document.querySelector('input[name="origin"]');
+        const destinationInput = document.querySelector('input[name="destination"]');
+        const carouselLeft = document.getElementById('carouselLeft');
+        const carouselRight = document.getElementById('carouselRight');
+        const carousel = document.querySelector('.destinations-carousel');
+
+        // Trip type toggle
+        function updateReturnDate() {
+            if (returnRadio && returnRadio.checked) {
+                returnDateGroup.style.display = 'block';
+            } else {
+                returnDateGroup.style.display = 'none';
+            }
+        }
+
+        if (returnRadio) returnRadio.addEventListener('change', updateReturnDate);
+        if (onewayRadio) onewayRadio.addEventListener('change', updateReturnDate);
+
+        // Swap locations
+        if (swapBtn && originInput && destinationInput) {
+            swapBtn.addEventListener('click', function () {
+                const temp = originInput.value;
+                originInput.value = destinationInput.value;
+                destinationInput.value = temp;
+            });
+        }
+
+        // Carousel controls
+        if (carouselLeft && carousel) {
+            carouselLeft.addEventListener('click', function () {
+                carousel.scrollBy({ left: -220, behavior: 'smooth' });
+            });
+        }
+
+        if (carouselRight && carousel) {
+            carouselRight.addEventListener('click', function () {
+                carousel.scrollBy({ left: 220, behavior: 'smooth' });
+            });
+        }
+
+        updateReturnDate();
+    });
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="search-container">
+        <div class="search-card">
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="brand-title">FLYNOVA</div>
+                    <h1 class="main-heading">Discover the World<br>with our flights.</h1>
+
+                    <form action="{% url 'search_flights' %}" method="GET">
+                        <!-- Trip Type Toggle -->
+                        <div class="trip-toggle">
+                            <label>
+                                <input type="radio" name="trip_type" id="returnTrip" value="round_trip">
+                                <span>Return</span>
+                            </label>
+                            <label>
+                                <input type="radio" name="trip_type" id="onewayTrip" value="one_way" checked>
+                                <span>Oneway</span>
+                            </label>
+                        </div>
+
+                        <!-- Flight Search Fields -->
+                        <div class="row g-3 position-relative">
+                            <div class="col-md-6">
+                                <div class="input-with-icon">
+                                    <input type="text" name="origin" class="form-control"
+                                        placeholder="Takeoff (e.g. Dhaka, DAC)" required>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="input-with-icon">
+                                    <input type="text" name="destination" class="form-control"
+                                        placeholder="Arrival (e.g. Cox's Bazar, CXB)" required>
+                                </div>
+                            </div>
+
+                            <!-- Swap Button -->
+                            <div class="swap-icon" id="swapBtn">
+                                <i class="fas fa-exchange-alt"></i>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mt-2">
+                            <div class="col-md-6">
+                                <div class="input-with-icon">
+                                    <input type="date" name="date" class="form-control" required>
+                                    <i class="fas fa-calendar-alt calendar-icon"></i>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 return-date-group" id="returnDateGroup">
+                                <div class="input-with-icon">
+                                    <input type="date" name="return_date" class="form-control">
+                                    <i class="fas fa-calendar-alt calendar-icon"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mt-2">
+                            <div class="col-md-6">
+                                <select name="seat_class" class="form-control">
+                                    <option value="economy">Economy</option>
+                                    <option value="business">Business</option>
+                                    <option value="first">First Class</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <input type="number" name="passengers" class="form-control"
+                                    placeholder="Number of Passengers" min="1" max="10" value="1">
+                            </div>
+                        </div>
+
+                        <div class="mt-4">
+                            <button type="submit" class="search-btn">Search</button>
+                        </div>
+                    </form>
+
+                    <!-- Popular Destinations -->
+                    <div class="destinations-section">
+                        <div class="destinations-header">
+                            <h3>Popular beach destination</h3>
+                            <div class="carousel-controls">
+                                <button type="button" class="carousel-btn" id="carouselLeft">
+                                    <i class="fas fa-chevron-left"></i>
+                                </button>
+                                <button type="button" class="carousel-btn" id="carouselRight">
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="destinations-carousel">
+                            <div class="destination-card">
+                                <img src="https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=400" alt="Beach">
+                                <div class="overlay">Cox's Bazar</div>
+                            </div>
+                            <div class="destination-card">
+                                <img src="https://images.unsplash.com/photo-1506929562872-bb421503ef21?w=400"
+                                    alt="Maldives">
+                                <div class="overlay">Maldives</div>
+                            </div>
+                            <div class="destination-card">
+                                <img src="https://images.unsplash.com/photo-1551244072-5d12893278ab?w=400" alt="Phuket">
+                                <div class="overlay">Phuket</div>
+                            </div>
+                            <div class="destination-card">
+                                <img src="https://images.unsplash.com/photo-1473496169904-658ba7c44d8a?w=400"
+                                    alt="Bali">
+                                <div class="overlay">Bali</div>
+                            </div>
+                            <div class="destination-card">
+                                <img src="https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?w=400"
+                                    alt="Santorini">
+                                <div class="overlay">Santorini</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6 d-none d-lg-block position-relative">
+                    <img src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800" alt="Airplane"
+                        class="airplane-image">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Additional Sections -->
+<div class="container my-5">
+    <h2 class="text-center mb-4">Why Choose FlyNova?</h2>
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm text-center p-4">
+                <div class="mb-3">
+                    <i class="fas fa-tags fa-3x text-primary"></i>
+                </div>
+                <h5>Best Prices</h5>
+                <p class="text-muted">Get the best deals on flights worldwide</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm text-center p-4">
+                <div class="mb-3">
+                    <i class="fas fa-shield-alt fa-3x text-primary"></i>
+                </div>
+                <h5>Safe & Secure</h5>
+                <p class="text-muted">Your booking is safe and secure with us</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm text-center p-4">
+                <div class="mb-3">
+                    <i class="fas fa-headset fa-3x text-primary"></i>
+                </div>
+                <h5>24/7 Support</h5>
+                <p class="text-muted">We're here to help you anytime</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}Booking Confirmed - FlyNova{% endblock %}
+
+{% block content %}
+<div class="container my-5 text-center">
+    <div class="card shadow-sm mx-auto" style="max-width: 600px;">
+        <div class="card-body p-5">
+            <div class="mb-4 text-success">
+                <i class="fas fa-check-circle fa-5x"></i>
+            </div>
+            <h2 class="mb-3">Booking Confirmed!</h2>
+            <p class="lead text-muted">Thank you for booking with FlyNova.</p>
+
+            <div class="alert alert-success mt-4">
+                Booking ID: <strong>#{{ booking.id }}</strong>
+            </div>
+
+            <p>A confirmation email has been sent to <strong>{{ booking.user.email }}</strong>.</p>
+
+            <div class="mt-4">
+                <a href="{% url 'my_bookings' %}" class="btn btn-primary">View My Bookings</a>
+                <a href="{% url 'home' %}" class="btn btn-outline-secondary">Back to Home</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

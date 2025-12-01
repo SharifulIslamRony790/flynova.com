@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block title %}Checkout - FlyNova{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Confirm Your Booking</h4>
+                </div>
+                <div class="card-body p-4">
+                    <h5 class="card-title mb-4">Booking Summary</h5>
+
+                    <div class="alert alert-light border">
+                        <strong>{{ summary }}</strong>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <p class="text-muted mb-1">Traveler Name</p>
+                            <h6>{{ user.get_full_name|default:user.username }}</h6>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <p class="text-muted mb-1">Total Price</p>
+                            <h3 class="text-primary">BDT {{ price }}</h3>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label">Payment Method</label>
+                            <select class="form-select">
+                                <option>Credit Card (Test Mode)</option>
+                                <option>Bkash</option>
+                                <option>Nagad</option>
+                            </select>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success btn-lg">Confirm & Pay</button>
+                            <a href="{% url 'home' %}" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
