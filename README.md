@@ -3,6 +3,9 @@
 ## 1. FlyNova Project Summary
 FlyNova is a comprehensive flight booking web application built with Django. It allows users to search for flights, book tickets, manage bookings, and explore holiday packages and hotels. The system features a modern, responsive UI/UX, secure authentication (including Google OAuth), and real-time flight information. It is designed to provide a seamless travel booking experience for users in Bangladesh and beyond.
 
+## Live Demo 🚀
+**[Click here to visit the live website](https://mdsharifulislamrony790.pythonanywhere.com/)**
+
 ## 2. Features
 *   **User Authentication:** Secure sign-up and login, including **Google OAuth** integration for one-click access.
 *   **Flight Search:** Advanced search functionality with filtering by origin, destination, date, and passengers.
