@@ -23,3 +23,22 @@ class Booking(models.Model):
 
     def __str__(self):
         return f"Booking #{self.id} - {self.user.email} ({self.status})"
+
+class Payment(models.Model):
+    PAYMENT_METHOD_CHOICES = (
+        ('BKASH', 'bKash'),
+        ('NAGAD', 'Nagad'),
+        ('VISA', 'Visa'),
+        ('MASTERCARD', 'MasterCard'),
+    )
+
+    booking = models.OneToOneField(Booking, on_delete=models.CASCADE, related_name='payment')
+    payment_method = models.CharField(max_length=20, choices=PAYMENT_METHOD_CHOICES)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    transaction_id = models.CharField(max_length=100, blank=True, null=True, help_text="For Mobile Banking")
+    card_last4 = models.CharField(max_length=4, blank=True, null=True, help_text="For Cards")
+    timestamp = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=20, default='SUCCESS') # SUCCESS or FAILED
+    
+    def __str__(self):
+        return f"Payment #{self.id} for Booking #{self.booking.id}"

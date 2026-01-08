@@ -9,88 +9,8 @@ from flights.models import Flight
 from hotels.models import Room
 from packages.models import Package
 
-@login_required
-def create_booking(request, type, id):
-    # Identify the object being booked
-    if type == 'flight':
-        model = Flight
-        obj = get_object_or_404(Flight, id=id)
-        price = obj.price
-        summary = f"Flight: {obj.airline.name} ({obj.origin.code} to {obj.destination.code})"
-    elif type == 'hotel':
-        model = Room
-        obj = get_object_or_404(Room, id=id)
-        price = obj.price_per_night
-        summary = f"Hotel: {obj.hotel.name} - {obj.get_room_type_display()}"
-    elif type == 'package':
-        model = Package
-        obj = get_object_or_404(Package, id=id)
-        price = obj.price
-        summary = f"Package: {obj.title} ({obj.duration_days} Days)"
-    else:
-        return redirect('home')
-
-    if request.method == 'POST':
-        # Create the booking
-        booking = Booking.objects.create(
-            user=request.user,
-            content_type=ContentType.objects.get_for_model(model),
-            object_id=obj.id,
-            total_price=price,
-            status='CONFIRMED'
-        )
-        
-        # Send Email
-        subject = f'Booking Confirmation - #{booking.id}'
-        message = f'Hi {request.user.username},\\n\\nYour booking for {summary} has been confirmed.\\nTotal Price: BDT {price}\\n\\nThank you for choosing FlyNova!'
-        from_email = settings.EMAIL_HOST_USER
-        recipient_list = [request.user.email]
-        
-        send_mail(subject, message, from_email, recipient_list, fail_silently=True)
-        
-        messages.success(request, f"Booking Successful! Your Booking ID is #{booking.id}")
-        return redirect('booking_success', pk=booking.id)
-
-    context = {
-        'object': obj,
-        'type': type,
-        'price': price,
-        'summary': summary
-    }
-    return render(request, 'bookings/checkout.html', context)
-
-@login_required
-def booking_success(request, pk):
-    booking = get_object_or_404(Booking, pk=pk, user=request.user)
-    return render(request, 'bookings/success.html', {'booking': booking})
-
-@login_required
-def my_bookings(request):
-    bookings = Booking.objects.filter(user=request.user).order_by('-booking_date')
-    return render(request, 'bookings/my_bookings.html', {'bookings': bookings})
-
-@login_required
-def print_ticket(request, pk):
-    booking = get_object_or_404(Booking, pk=pk, user=request.user)
-    return render(request, 'bookings/print_ticket.html', {'booking': booking})
-
-@login_required
-def download_ticket_pdf(request, pk):
-    from django.http import HttpResponse
-    from reportlab.lib.pagesizes import letter
-    from reportlab.lib import colors
-    from reportlab.lib.units import inch
-    from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
-from django.contrib.contenttypes.models import ContentType
-from django.contrib import messages
-from django.core.mail import send_mail
-from django.conf import settings
-from .models import Booking
-from flights.models import Flight
-from hotels.models import Room
-from packages.models import Package
+from .forms import PaymentForm
+from .models import Payment
 
 @login_required
 def create_booking(request, type, id):
@@ -104,6 +24,7 @@ def create_booking(request, type, id):
         model = Room
         obj = get_object_or_404(Room, id=id)
         price = obj.price_per_night
+        # Assuming stay is 1 night for simplicity tailored to existing logic
         summary = f"Hotel: {obj.hotel.name} - {obj.get_room_type_display()}"
     elif type == 'package':
         model = Package
@@ -113,32 +34,58 @@ def create_booking(request, type, id):
     else:
         return redirect('home')
 
+    form = PaymentForm(request.POST or None)
+
     if request.method == 'POST':
-        # Create the booking
-        booking = Booking.objects.create(
-            user=request.user,
-            content_type=ContentType.objects.get_for_model(model),
-            object_id=obj.id,
-            total_price=price,
-            status='CONFIRMED'
-        )
-        
-        # Send Email
-        subject = f'Booking Confirmation - #{booking.id}'
-        message = f'Hi {request.user.username},\\n\\nYour booking for {summary} has been confirmed.\\nTotal Price: BDT {price}\\n\\nThank you for choosing FlyNova!'
-        from_email = settings.EMAIL_HOST_USER
-        recipient_list = [request.user.email]
-        
-        send_mail(subject, message, from_email, recipient_list, fail_silently=True)
-        
-        messages.success(request, f"Booking Successful! Your Booking ID is #{booking.id}")
-        return redirect('booking_success', pk=booking.id)
+        if form.is_valid():
+            # 1. Create Booking (Pending)
+            booking = Booking.objects.create(
+                user=request.user,
+                content_type=ContentType.objects.get_for_model(model),
+                object_id=obj.id,
+                total_price=price,
+                status='CONFIRMED' # Confirm immediately after "payment"
+            )
+            
+            # 2. Create Payment Record
+            payment = form.save(commit=False)
+            payment.booking = booking
+            payment.amount = price
+            # Mask card number if present
+            if payment.payment_method in ['VISA', 'MASTERCARD']:
+                card_num = form.cleaned_data.get('card_number')
+                payment.card_last4 = card_num[-4:] if card_num else '0000'
+            payment.save()
+            
+            # 3. Send Email
+            subject = f'Booking Confirmation - #{booking.id}'
+            message = f'''Hi {request.user.username},
+
+Your payment of BDT {price} via {payment.get_payment_method_display()} was successful.
+Your booking for {summary} is confirmed.
+
+Thank you for choosing FlyNova!'''
+            from_email = settings.EMAIL_HOST_USER
+            recipient_list = [request.user.email]
+            
+            try:
+                send_mail(subject, message, from_email, recipient_list, fail_silently=False)
+            except Exception as e:
+                # Log the error but don't fail the booking
+                print(f"Email sending failed: {e}")
+                messages.warning(request, f"Booking confirmed, but confirmation email failed: {e}")
+            
+            messages.success(request, f"Payment Verified! Booking Confirmed (ID #{booking.id})")
+            return redirect('booking_success', pk=booking.id)
+        else:
+            messages.error(request, "Payment failed. Please check the details.")
 
     context = {
         'object': obj,
         'type': type,
         'price': price,
-        'summary': summary
+        'summary': summary,
+        'form': form,
     }
     return render(request, 'bookings/checkout.html', context)
 

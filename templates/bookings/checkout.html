@@ -30,22 +30,222 @@
 
                     <hr>
 
-                    <form method="post">
+                    <form method="post" id="payment-form">
                         {% csrf_token %}
-                        <div class="mb-3">
-                            <label class="form-label">Payment Method</label>
-                            <select class="form-select">
-                                <option>Credit Card (Test Mode)</option>
-                                <option>Bkash</option>
-                                <option>Nagad</option>
-                            </select>
+
+                        {% if form.errors %}
+                        <div class="alert alert-danger">
+                            {{ form.errors }}
+                        </div>
+                        {% endif %}
+
+                        <!-- Step 1: Select Method -->
+                        <div id="step-select-method">
+                            <h5 class="mb-3">Select payment method</h5>
+                            <p class="text-muted small mb-4">Preferred method with secure transactions.</p>
+
+                            <!-- EXPLICIT HIDDEN INPUT FOR METHOD -->
+                            <input type="hidden" name="payment_method" id="id_payment_method" required>
+
+                            <div class="payment-methods-list d-grid gap-3">
+                                <!-- Visa -->
+                                <div class="payment-card p-3 border rounded d-flex align-items-center justify-content-between cursor-pointer"
+                                    onclick="selectMethod('VISA', this)">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="logo-box">
+                                            <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/Visa_Logo.png"
+                                                height="20" alt="Visa">
+                                        </div>
+                                        <span class="fw-medium">Pay with Visa</span>
+                                    </div>
+                                    <i class="fas fa-check-circle text-primary opacity-0 check-icon"></i>
+                                </div>
+
+                                <!-- Mastercard -->
+                                <div class="payment-card p-3 border rounded d-flex align-items-center justify-content-between cursor-pointer"
+                                    onclick="selectMethod('MASTERCARD', this)">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="logo-box">
+                                            <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg"
+                                                height="24" alt="Mastercard">
+                                        </div>
+                                        <span class="fw-medium">Pay with Mastercard</span>
+                                    </div>
+                                    <i class="fas fa-check-circle text-primary opacity-0 check-icon"></i>
+                                </div>
+
+                                <!-- bKash -->
+                                <div class="payment-card p-3 border rounded d-flex align-items-center justify-content-between cursor-pointer"
+                                    onclick="selectMethod('BKASH', this)">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="logo-box">
+                                            <img src="https://seeklogo.com/images/B/bkash-logo-835789094A-seeklogo.com.png"
+                                                height="24" alt="bKash">
+                                        </div>
+                                        <span class="fw-medium">Pay with bKash</span>
+                                    </div>
+                                    <i class="fas fa-check-circle text-primary opacity-0 check-icon"></i>
+                                </div>
+
+                                <!-- Nagad -->
+                                <div class="payment-card p-3 border rounded d-flex align-items-center justify-content-between cursor-pointer"
+                                    onclick="selectMethod('NAGAD', this)">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="logo-box">
+                                            <img src="https://seeklogo.com/images/N/nagad-logo-7A70CCFEE0-seeklogo.com.png"
+                                                height="20" alt="Nagad">
+                                        </div>
+                                        <span class="fw-medium">Pay with Nagad</span>
+                                    </div>
+                                    <i class="fas fa-check-circle text-primary opacity-0 check-icon"></i>
+                                </div>
+                            </div>
+
+                            <div class="d-grid gap-2 mt-4">
+                                <button type="button" class="btn btn-primary btn-lg" id="btn-continue" disabled
+                                    onclick="goToDetails()">Continue</button>
+                                <a href="{% url 'home' %}" class="btn btn-outline-secondary">Cancel</a>
+                            </div>
                         </div>
 
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-success btn-lg">Confirm & Pay</button>
-                            <a href="{% url 'home' %}" class="btn btn-outline-secondary">Cancel</a>
+                        <!-- Step 2: Payment Details -->
+                        <div id="step-payment-details" style="display:none;">
+                            <div class="d-flex align-items-center mb-4">
+                                <button type="button" class="btn btn-sm btn-light border me-3" onclick="goBack()"><i
+                                        class="fas fa-arrow-left"></i></button>
+                                <h5 class="mb-0">Payment Details</h5>
+                            </div>
+
+                            <div class="alert alert-info border-0 bg-light">
+                                <i class="fas fa-lock me-2"></i> Secure Transaction via <span id="selected-method-name"
+                                    class="fw-bold"></span>
+                            </div>
+
+                            <!-- Mobile Banking Fields (bKash/Nagad) -->
+                            <div id="mobile-banking-fields" style="display:none;">
+                                <div class="mb-3">
+                                    <label class="form-label">Your Mobile Number</label>
+                                    <input type="text" name="mobile_number" class="form-control"
+                                        placeholder="01XXXXXXXXX" id="id_mobile_number">
+                                    <div class="form-text">Your bKash/Nagad account number.</div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Transaction ID</label>
+                                    <input type="text" name="transaction_id" class="form-control"
+                                        placeholder="Enter Transaction ID" id="id_transaction_id">
+                                    <div class="form-text">Enter the transaction ID received after payment.</div>
+                                </div>
+                            </div>
+
+                            <!-- Card Fields (Visa/MasterCard) -->
+                            <div id="card-fields" style="display:none;">
+                                <div class="mb-3">
+                                    <label class="form-label">Card Number</label>
+                                    <input type="text" name="card_number" class="form-control"
+                                        placeholder="XXXX-XXXX-XXXX-XXXX">
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Expiry Date</label>
+                                        <input type="text" name="card_expiry" class="form-control" placeholder="MM/YY">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">CVC/CVV</label>
+                                        <input type="text" name="card_cvc" class="form-control" placeholder="123">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-grid gap-2 mt-4">
+                                <button type="submit" class="btn btn-success btn-lg">Pay & Confirm Booking</button>
+                            </div>
                         </div>
                     </form>
+
+                    <style>
+                        .payment-card {
+                            transition: all 0.2s;
+                            background: #fff;
+                        }
+
+                        .payment-card:hover {
+                            background: #f8f9fa;
+                            border-color: #dee2e6;
+                        }
+
+                        .payment-card.selected {
+                            border-color: #2c7a9e !important;
+                            background-color: #f0f7fa;
+                            box-shadow: 0 0 0 1px #2c7a9e;
+                        }
+
+                        .payment-card.selected .check-icon {
+                            opacity: 1 !important;
+                        }
+
+                        .cursor-pointer {
+                            cursor: pointer;
+                        }
+
+                        .logo-box {
+                            width: 50px;
+                            display: flex;
+                            justify-content: center;
+                        }
+                    </style>
+
+                    <script>
+                        const methodSelect = document.getElementById('id_payment_method');
+                        const continueBtn = document.getElementById('btn-continue');
+                        const stepSelect = document.getElementById('step-select-method');
+                        const stepDetails = document.getElementById('step-payment-details');
+                        const mobileFields = document.getElementById('mobile-banking-fields');
+                        const cardFields = document.getElementById('card-fields');
+                        const selectedMethodName = document.getElementById('selected-method-name');
+
+                        // Inputs
+                        const mobileInput = document.getElementById('id_mobile_number');
+                        const transactionInput = document.getElementById('id_transaction_id');
+
+                        function selectMethod(method, element) {
+                            // Update hidden select
+                            methodSelect.value = method;
+
+                            // Visual update
+                            document.querySelectorAll('.payment-card').forEach(el => el.classList.remove('selected'));
+                            element.classList.add('selected');
+
+                            // Enable continue
+                            continueBtn.disabled = false;
+                        }
+
+                        function goToDetails() {
+                            const method = methodSelect.value;
+                            if (!method) return;
+
+                            stepSelect.style.display = 'none';
+                            stepDetails.style.display = 'block';
+
+                            selectedMethodName.textContent = method;
+
+                            if (method === 'BKASH' || method === 'NAGAD') {
+                                mobileFields.style.display = 'block';
+                                cardFields.style.display = 'none';
+                                mobileInput.required = true;
+                                transactionInput.required = true;
+                            } else {
+                                cardFields.style.display = 'block';
+                                mobileFields.style.display = 'none';
+                                mobileInput.required = false;
+                                transactionInput.required = false;
+                            }
+                        }
+
+                        function goBack() {
+                            stepDetails.style.display = 'none';
+                            stepSelect.style.display = 'block';
+                        }
+                    </script>
                 </div>
             </div>
         </div>
