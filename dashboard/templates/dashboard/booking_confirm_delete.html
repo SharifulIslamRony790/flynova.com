@@ -1,0 +1,39 @@
+{% extends 'dashboard/base_admin.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 mt-5">
+        <div class="premium-card">
+            <div class="p-4 border-bottom text-center" style="border-color: #F8FAFC; background-color: #FFF1F2; border-radius: 16px 16px 0 0;">
+                <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 60px; height: 60px; background-color: #FFE4E6; color: #E11D48;">
+                    <i class="fas fa-exclamation-triangle fa-2x"></i>
+                </div>
+                <h4 class="m-0 fw-bold" style="color: #BE123C;">Confirm Deletion</h4>
+            </div>
+            
+            <div class="p-4 text-center">
+                <p class="mb-4 text-muted" style="font-size: 1.1rem;">
+                    Are you sure you want to delete the booking 
+                    <strong class="text-dark">#{{ object.id }}</strong> for 
+                    <strong class="text-dark">{{ object.user.email }}</strong>?
+                </p>
+                <p class="small text-danger mb-4">
+                    <i class="fas fa-info-circle me-1"></i> This action cannot be undone. This will permanently remove the booking record from the database.
+                </p>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-flex gap-3 justify-content-center">
+                        <a href="{% url 'dashboard:booking_list' %}" class="btn btn-light" style="border: 1px solid #E2E8F0; padding: 12px 30px; border-radius: 10px; font-weight: 500;">
+                            Cancel
+                        </a>
+                        <button type="submit" class="btn btn-danger" style="padding: 12px 30px; border-radius: 10px; font-weight: 500; box-shadow: 0 4px 6px rgba(225,29,72,0.2);">
+                            <i class="fas fa-trash-alt me-2"></i> Yes, Delete Booking
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

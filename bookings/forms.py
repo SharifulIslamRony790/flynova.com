@@ -1,6 +1,16 @@
+# ==========================================
+# BOOKINGS APP FORMS
+# ==========================================
+# This file handles the form definitions for processing payments.
+# Features included: PaymentForm.
+
 from django import forms
 from .models import Payment
 
+# ---------------------------------------------------------
+# 1. PAYMENT FORM
+# ---------------------------------------------------------
+# Validates and collects payment details based on the selected payment method.
 class PaymentForm(forms.ModelForm):
     card_number = forms.CharField(max_length=19, required=False, widget=forms.TextInput(attrs={'placeholder': 'XXXX-XXXX-XXXX-XXXX'}))
     card_expiry = forms.CharField(max_length=5, required=False, widget=forms.TextInput(attrs={'placeholder': 'MM/YY'}))

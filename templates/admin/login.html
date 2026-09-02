@@ -1,0 +1,222 @@
+{% load i18n static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log in | FlyNova Dashboard</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #2563EB;
+            --primary-hover: #1D4ED8;
+            --surface-bg: #F8FAFC;
+            --surface-card: #FFFFFF;
+            --text-main: #0F172A;
+            --text-muted: #64748B;
+            --border-color: #E2E8F0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--surface-bg);
+            color: var(--text-main);
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-wrapper {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+        }
+
+        .brand-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .brand-header i {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .brand-header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+            color: var(--text-main);
+        }
+
+        .brand-header p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .login-card {
+            background: var(--surface-card);
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+            border: 1px solid var(--border-color);
+            padding: 32px;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-main);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            box-sizing: border-box;
+            transition: all 0.2s ease;
+            background-color: #F8FAFC;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            background-color: #FFFFFF;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 1rem;
+        }
+
+        .btn-submit:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+        }
+
+        .error-msg {
+            background-color: #FEE2E2;
+            color: #991B1B;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 2rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        
+        .back-link:hover {
+            color: var(--text-main);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-wrapper">
+        <div class="brand-header">
+            <i class="fas fa-plane-departure"></i>
+            <h1>FlyNova Workspace</h1>
+            <p>Enter your credentials to access the dashboard</p>
+        </div>
+
+        <div class="login-card">
+            {% if form.errors and not form.non_field_errors %}
+                <div class="error-msg">
+                    <i class="fas fa-exclamation-circle"></i>
+                    {% if form.errors.items|length == 1 %}
+                        Please correct the error below.
+                    {% else %}
+                        Please correct the errors below.
+                    {% endif %}
+                </div>
+            {% endif %}
+
+            {% if form.non_field_errors %}
+                {% for error in form.non_field_errors %}
+                    <div class="error-msg">
+                        <i class="fas fa-exclamation-circle"></i> {{ error }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            {% if user.is_authenticated %}
+                <div class="error-msg">
+                    <i class="fas fa-lock"></i>
+                    You are authenticated as {{ user.email }}, but are not authorized to access this page. Would you like to login to a different account?
+                </div>
+            {% endif %}
+
+            <form action="{{ app_path }}" method="post" id="login-form">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label class="form-label" for="id_username">Email Address</label>
+                    <input type="text" name="username" class="form-control" autofocus autocapitalize="none" autocomplete="username" maxlength="254" required id="id_username" placeholder="name@company.com">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="id_password">Password</label>
+                    <input type="password" name="password" class="form-control" autocomplete="current-password" required id="id_password" placeholder="••••••••">
+                </div>
+                
+                {% url 'admin_password_reset' as password_reset_url %}
+                {% if password_reset_url %}
+                <div style="text-align: right; margin-bottom: 1rem;">
+                    <a href="{{ password_reset_url }}" style="font-size: 0.8rem; color: var(--primary); text-decoration: none; font-weight: 500;">Forgot Password?</a>
+                </div>
+                {% endif %}
+
+                <input type="hidden" name="next" value="{% url 'dashboard:home' %}">
+                <button type="submit" class="btn-submit">Sign In</button>
+            </form>
+        </div>
+        
+        <a href="{% url 'home' %}" class="back-link">
+            <i class="fas fa-arrow-left me-1"></i> Back to main website
+        </a>
+    </div>
+
+</body>
+</html>

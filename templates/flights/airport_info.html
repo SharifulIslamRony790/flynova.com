@@ -2,97 +2,346 @@
 
 {% block title %}Airport Information - FlyNova{% endblock %}
 
+{% block extra_css %}
+<style>
+    body {
+        background-color: #f8fafc;
+    }
+
+    .page-header {
+        background: linear-gradient(135deg, #0d2b4d 0%, #1e5a7b 100%);
+        color: white;
+        padding: 80px 0 60px;
+        margin-bottom: -40px;
+        text-align: center;
+        border-bottom: 5px solid #3da5d9;
+    }
+
+    .page-header h1 {
+        font-weight: 800;
+        letter-spacing: -1px;
+        margin-bottom: 15px;
+    }
+
+    .page-header p {
+        font-size: 1.1rem;
+        color: rgba(255, 255, 255, 0.8);
+        font-weight: 300;
+    }
+
+    .airport-card {
+        border: none;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        margin-bottom: 40px;
+        background: white;
+        position: relative;
+        z-index: 10;
+    }
+
+    .airport-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    }
+
+    .airport-header {
+        background: white;
+        padding: 25px 30px;
+        border-bottom: 1px solid #f1f5f9;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .airport-title {
+        color: #0f172a;
+        font-weight: 700;
+        margin: 0;
+        font-size: 1.4rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .airport-subtitle {
+        color: #64748b;
+        font-size: 0.95rem;
+        margin-top: 5px;
+        display: block;
+    }
+
+    .airport-code-badge {
+        background: #f1f5f9;
+        color: #3b82f6;
+        padding: 5px 12px;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 1rem;
+    }
+
+    .table {
+        margin-bottom: 0;
+    }
+
+    .table th {
+        border-top: none;
+        border-bottom: 2px solid #f1f5f9;
+        color: #64748b;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.5px;
+        padding: 15px 25px;
+        background-color: #f8fafc;
+    }
+
+    .table td {
+        vertical-align: middle;
+        padding: 18px 25px;
+        color: #334155;
+        border-bottom: 1px solid #f1f5f9;
+        font-size: 0.95rem;
+    }
+
+    .table tbody tr {
+        transition: background-color 0.2s;
+    }
+
+    .table tbody tr:hover {
+        background-color: #f8fafc;
+    }
+
+    .flight-num {
+        font-weight: 700;
+        color: #0f172a;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .airline-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 500;
+    }
+
+    .airline-logo-wrapper {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: white;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 4px;
+    }
+
+    .airline-logo-wrapper img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+    }
+
+    .route-info {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .route-city {
+        font-weight: 600;
+        color: #0f172a;
+    }
+
+    .route-code {
+        font-size: 0.8rem;
+        color: #64748b;
+    }
+
+    .time-primary {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #0f172a;
+    }
+
+    .time-secondary {
+        font-size: 0.85rem;
+        color: #64748b;
+    }
+
+    .status-badge {
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .status-landed {
+        background-color: #dcfce7;
+        color: #166534;
+    }
+
+    .status-delayed {
+        background-color: #fef08a;
+        color: #854d0e;
+    }
+
+    .status-ontime {
+        background-color: #e0f2fe;
+        color: #0369a1;
+    }
+    
+    .status-landing-soon {
+        background-color: #ffedd5;
+        color: #9a3412;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    }
+    
+    .empty-state i {
+        font-size: 4rem;
+        color: #cbd5e1;
+        margin-bottom: 20px;
+    }
+    
+    .empty-state h3 {
+        color: #0f172a;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+    
+    .empty-state p {
+        color: #64748b;
+    }
+
+    @media (max-width: 768px) {
+        .airport-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        .table th, .table td {
+            padding: 12px 15px;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container my-5">
-    <h2 class="mb-4">🛬 Real-Time Airport Information</h2>
-    <p class="lead">Live flight arrival information for all airports</p>
-
-    {% for airport_data in airports_with_arrivals %}
-    <div class="card mb-4 shadow-sm">
-        <div class="card-header bg-primary text-white">
-            <h4 class="mb-0">{{ airport_data.airport.name }} ({{ airport_data.airport.code }})</h4>
-            <small>{{ airport_data.airport.city }}, {{ airport_data.airport.country }}</small>
-        </div>
-        <div class="card-body">
-            {% if airport_data.arrivals %}
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Flight Number</th>
-                            <th>Airline</th>
-                            <th>From</th>
-                            <th>Scheduled Arrival</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for flight in airport_data.arrivals %}
-                        <tr>
-                            <td><strong>{{ flight.flight_number }}</strong></td>
-                            <td>
-                                {% if flight.airline.logo %}
-                                <img src="{{ flight.airline.logo.url }}" alt="{{ flight.airline.name }}"
-                                    style="height: 30px;" class="me-2">
-                                {% endif %}
-                                {{ flight.airline.name }}
-                            </td>
-                            <td>
-                                <strong>{{ flight.origin.code }}</strong> - {{ flight.origin.city }}
-                            </td>
-                            <td>
-                                <strong>{{ flight.arrival_time|date:"d M, Y" }}</strong><br>
-                                <span class="text-primary">{{ flight.arrival_time|date:"H:i" }}</span>
-                            </td>
-                            <td>
-                                {% if flight.status == 'Landed' %}
-                                <span class="badge bg-success">✓ Landed</span>
-                                {% elif flight.status == 'Delayed' %}
-                                <span class="badge bg-warning text-dark">⚠ Delayed</span>
-                                {% else %}
-                                <span class="badge bg-info">✈ On Time</span>
-                                {% endif %}
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            {% else %}
-            <p class="text-muted text-center py-3">No upcoming arrivals in the next 24 hours</p>
-            {% endif %}
-        </div>
+<div class="page-header">
+    <div class="container">
+        <h1><i class="fas fa-satellite-dish text-info me-3"></i>Live Airport Board</h1>
+        <p>Real-time flight arrival information for domestic and international airports</p>
     </div>
-    {% endfor %}
+</div>
 
+<div class="container" style="position: relative; z-index: 20; padding-bottom: 60px;">
     {% if not airports_with_arrivals %}
-    <div class="alert alert-info text-center">
-        <h4>No airport data available</h4>
-        <p>No airports or flights found in the system.</p>
+    <div class="empty-state mt-5">
+        <i class="fas fa-plane-slash"></i>
+        <h3>No Arrivals Scheduled</h3>
+        <p>There are no flights scheduled to arrive in the next 24 hours at any airport.</p>
     </div>
+    {% else %}
+        {% for airport_data in airports_with_arrivals %}
+        <div class="airport-card">
+            <div class="airport-header">
+                <div>
+                    <h3 class="airport-title">
+                        <i class="fas fa-map-marker-alt text-danger"></i> {{ airport_data.airport.name }}
+                    </h3>
+                    <span class="airport-subtitle">{{ airport_data.airport.city }}, {{ airport_data.airport.country }}</span>
+                </div>
+                <div class="airport-code-badge">
+                    {{ airport_data.airport.code }}
+                </div>
+            </div>
+            
+            <div class="card-body p-0">
+                {% if airport_data.arrivals %}
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Flight</th>
+                                <th>Airline</th>
+                                <th>Origin</th>
+                                <th>Scheduled</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for flight in airport_data.arrivals %}
+                            <tr>
+                                <td>
+                                    <span class="flight-num"><i class="fas fa-plane text-muted"></i> {{ flight.flight_number }}</span>
+                                </td>
+                                <td>
+                                    <div class="airline-info">
+                                        {% if flight.airline.logo %}
+                                        <div class="airline-logo-wrapper">
+                                            <img src="{{ flight.airline.logo.url }}" alt="{{ flight.airline.name }}">
+                                        </div>
+                                        {% endif %}
+                                        <span>{{ flight.airline.name }}</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="route-info">
+                                        <span class="route-city">{{ flight.origin.city }}</span>
+                                        <span class="route-code">{{ flight.origin.name }} ({{ flight.origin.code }})</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="time-primary">{{ flight.arrival_time|date:"h:i A" }}</div>
+                                    <div class="time-secondary">{{ flight.arrival_time|date:"d M, Y" }}</div>
+                                </td>
+                                <td>
+                                    {% if flight.status == 'Landed' %}
+                                    <span class="status-badge status-landed"><i class="fas fa-check-circle"></i> Landed</span>
+                                    {% elif flight.status == 'Delayed' %}
+                                    <span class="status-badge status-delayed"><i class="fas fa-exclamation-triangle"></i> Delayed</span>
+                                    {% elif flight.status == 'Landing Soon' %}
+                                    <span class="status-badge status-landing-soon"><i class="fas fa-plane-arrival"></i> Landing Soon</span>
+                                    {% else %}
+                                    <span class="status-badge status-ontime"><i class="far fa-clock"></i> On Time</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="p-4 text-center text-muted">
+                    <p class="mb-0">No upcoming arrivals in the next 24 hours</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
     {% endif %}
 </div>
 
+{% endblock %}
+
+{% block extra_js %}
 <script>
     // Auto-refresh page every 60 seconds for real-time updates
     setTimeout(function () {
         location.reload();
     }, 60000);
 </script>
-
-<style>
-    .table th {
-        border-top: none;
-    }
-
-    .card-header h4 {
-        font-size: 1.5rem;
-    }
-
-    @media (max-width: 768px) {
-        .table {
-            font-size: 0.85rem;
-        }
-    }
-</style>
 {% endblock %}

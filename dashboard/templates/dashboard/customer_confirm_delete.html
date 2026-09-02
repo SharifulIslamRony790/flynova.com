@@ -1,0 +1,36 @@
+{% extends 'dashboard/base_admin.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="premium-card p-5 text-center mt-4">
+            <div class="mb-4">
+                <div class="d-inline-flex align-items-center justify-content-center bg-danger bg-opacity-10 text-danger rounded-circle" style="width: 80px; height: 80px;">
+                    <i class="fas fa-exclamation-triangle fa-3x"></i>
+                </div>
+            </div>
+            
+            <h3 class="fw-bold mb-3">Delete Customer</h3>
+            <p class="text-muted mb-4">
+                Are you sure you want to permanently delete customer 
+                <strong class="text-dark">"{{ object.username }}"</strong>?
+            </p>
+
+            <div class="alert alert-warning text-start mb-4">
+                <i class="fas fa-info-circle me-2"></i>
+                <strong>Warning:</strong> Deleting a customer will also permanently delete all of their associated bookings and payment history. If you want to keep their history, consider <strong>suspending</strong> them instead.
+            </div>
+
+            <form method="post" class="d-grid gap-3">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger py-2 fw-medium">
+                    <i class="fas fa-trash-alt me-2"></i> Yes, Delete Customer
+                </button>
+                <a href="{% url 'dashboard:customer_profile' object.pk %}" class="btn btn-light py-2 fw-medium text-muted">
+                    Cancel
+                </a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

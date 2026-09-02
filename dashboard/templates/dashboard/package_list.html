@@ -1,0 +1,93 @@
+{% extends 'dashboard/base_admin.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="page-title">{{ title }}</h1>
+    <a href="{% url 'dashboard:package_create' %}" class="btn-premium text-decoration-none">
+        <i class="fas fa-plus me-2"></i> Add Package
+    </a>
+</div>
+
+<div class="premium-card">
+    <div class="table-responsive">
+        <table class="table align-middle mb-0" style="border-collapse: separate; border-spacing: 0;">
+            <thead class="text-muted" style="font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 600;">
+                <tr>
+                    <th scope="col" class="py-4 ps-4 border-bottom border-top-0" style="border-color: #F1F5F9;">Package Title</th>
+                    <th scope="col" class="py-4 border-bottom border-top-0" style="border-color: #F1F5F9;">Destination</th>
+                    <th scope="col" class="py-4 border-bottom border-top-0" style="border-color: #F1F5F9;">Duration</th>
+                    <th scope="col" class="py-4 border-bottom border-top-0" style="border-color: #F1F5F9;">Price</th>
+                    <th scope="col" class="py-4 pe-4 border-bottom border-top-0 text-end" style="border-color: #F1F5F9;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for package in packages %}
+                <tr class="table-row-hover">
+                    <td class="py-4 ps-4 border-bottom" style="border-color: #F8FAFC;">
+                        <div class="d-flex align-items-center gap-3">
+                            {% if package.image %}
+                                {% if "http" in package.image.name %}
+                                    <img src="{{ package.image.name }}" alt="{{ package.title }}" class="rounded" style="width: 48px; height: 48px; object-fit: cover;">
+                                {% else %}
+                                    <img src="{{ package.image.url }}" alt="{{ package.title }}" class="rounded" style="width: 48px; height: 48px; object-fit: cover;">
+                                {% endif %}
+                            {% else %}
+                                <div class="rounded d-flex align-items-center justify-content-center bg-light text-muted" style="width: 48px; height: 48px;">
+                                    <i class="fas fa-image"></i>
+                                </div>
+                            {% endif %}
+                            <div>
+                                <div class="fw-semibold text-dark" style="font-size: 0.95rem;">{{ package.title }}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="py-4 border-bottom" style="border-color: #F8FAFC;">
+                        <div class="fw-medium text-dark" style="font-size: 0.95rem;"><i class="fas fa-map-marker-alt text-danger me-2 opacity-75"></i>{{ package.destination }}</div>
+                    </td>
+                    <td class="py-4 border-bottom" style="border-color: #F8FAFC;">
+                        <div class="fw-medium text-dark" style="font-size: 0.95rem;">{{ package.duration_days }} Days</div>
+                        <div class="small mt-1 text-muted">{{ package.duration_nights }} Nights</div>
+                    </td>
+                    <td class="py-4 fw-semibold text-dark border-bottom" style="border-color: #F8FAFC; font-size: 0.95rem;">BDT {{ package.price }}</td>
+                    <td class="py-4 pe-4 text-end border-bottom" style="border-color: #F8FAFC;">
+                        <button class="btn btn-sm btn-icon" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-ellipsis-h"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0" style="border-radius: 8px;">
+                            <li><a class="dropdown-item" href="{% url 'dashboard:package_update' package.pk %}"><i class="fas fa-edit text-primary me-2"></i> Edit Package</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="#"><i class="fas fa-trash-alt me-2"></i> Delete</a></li>
+                        </ul>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center py-5 text-muted">
+                        <i class="fas fa-umbrella-beach fa-3x mb-3 text-light"></i>
+                        <h5>No packages found</h5>
+                        <p>Get started by adding a new holiday package.</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination -->
+    {% if is_paginated %}
+    <nav class="mt-4 pb-4">
+        <ul class="pagination justify-content-center mb-0">
+            {% if page_obj.has_previous %}
+                <li class="page-item"><a class="page-link text-primary border-0" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+            {% endif %}
+            
+            <li class="page-item active"><span class="page-link bg-primary border-0">{{ page_obj.number }}</span></li>
+            
+            {% if page_obj.has_next %}
+                <li class="page-item"><a class="page-link text-primary border-0" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}

@@ -25,7 +25,6 @@ MANIFEST
 *.log
 local_settings.py
 db.sqlite3-journal
-media/
 staticfiles/
 # If you are using a custom static directory that you WANT to commit, keep it. 
 # Usually 'static/' is source and 'staticfiles/' is collected. 
@@ -64,3 +63,4 @@ Thumbs.db
 .coverage
 htmlcov/
 .pytest_cache/
+db.sqlite3

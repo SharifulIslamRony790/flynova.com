@@ -1,127 +1,140 @@
-# FlyNova - Flight Booking System ✈️
+<div align="center">
+  <img src="https://img.icons8.com/color/96/000000/airplane-take-off.png" alt="FlyNova Logo"/>
+  <h1>FlyNova - Premium Flight Booking System ✈️</h1>
+  
+  <p>
+    <strong>A comprehensive, modern, and production-ready flight booking web application built with Django.</strong>
+  </p>
 
-## 1. FlyNova Project Summary
-FlyNova is a comprehensive flight booking web application built with Django. It allows users to search for flights, book tickets, manage bookings, and explore holiday packages and hotels. The system features a modern, responsive UI/UX, secure authentication (including Google OAuth), and real-time flight information. It is designed to provide a seamless travel booking experience for users in Bangladesh and beyond.
+  <p>
+    <a href="https://mdsharifulislamrony790.pythonanywhere.com/"><b>🔴 LIVE DEMO</b></a>
+  </p>
 
-## Live Demo 🚀
-**🔴 [CLICK HERE TO VISIT LIVE WEBSITE](https://mdsharifulislamrony790.pythonanywhere.com/)**
+  <p>
+    <img src="https://img.shields.io/badge/Python-3.8+-blue.svg" alt="Python" />
+    <img src="https://img.shields.io/badge/Django-5.2.8-092E20.svg" alt="Django" />
+    <img src="https://img.shields.io/badge/Database-PostgreSQL-336791.svg" alt="PostgreSQL" />
+    <img src="https://img.shields.io/badge/Styling-Bootstrap%205-563D7C.svg" alt="Bootstrap" />
+    <img src="https://img.shields.io/badge/Status-Production%20Ready-success.svg" alt="Status" />
+  </p>
+</div>
 
-## 2. Features
-*   **User Authentication:** Secure sign-up and login, including **Google OAuth** integration for one-click access.
-*   **Flight Search:** Advanced search functionality with filtering by origin, destination, date, and passengers.
-*   **Smart Price Filtering:** Filter flight results by price categories: **Low**, **Mid**, and **High**.
-*   **Recent Flights First:** Search results and bookings are automatically sorted to show the most recent options first.
-*   **Real-Time Airport Info:** Live dashboard showing flight arrivals and status (On Time, Landing Soon, Landed) for the next 24 hours.
-*   **Booking Management:** Users can view their booking history, print tickets, and download PDF tickets.
-*   **Holiday Packages & Hotels:** Dedicated sections for browsing and booking holiday packages and hotels.
-*   **Responsive Design:** A fully responsive interface that works beautifully on desktop, tablet, and mobile devices.
-*   **Admin Dashboard:** Comprehensive admin panel for managing flights, airports, bookings, and users.
+---
 
-## 3. Requirements
-*   Python 3.8+
-*   Django 5.2.8
-*   django-allauth 0.57.0 (for social authentication)
-*   pillow 12.0.0 (for image handling)
-*   reportlab 4.0.7 (for PDF generation)
-*   sqlparse 0.5.3
-*   tzdata 2025.2
-*   asgiref 3.11.0
+## 📖 1. Project Summary
+**FlyNova** allows users to search for flights, book tickets, manage bookings, and explore holiday packages and hotels. The system features a modern, responsive UI/UX, secure authentication (including Google OAuth), and real-time flight information. It is designed to provide a seamless, premium travel booking experience.
 
-## 4. Installation
+## ✨ 2. Key Features
+*   🔐 **Secure User Authentication:** Encrypted sign-up and login, including **Google OAuth** integration for one-click access.
+*   🔍 **Advanced Flight Search:** Powerful search functionality with filtering by origin, destination, date, and passenger count.
+*   💰 **Smart Price Filtering:** Filter flight results instantly by price categories: **Low**, **Mid**, and **High**.
+*   🕒 **Real-Time Airport Info:** Live dashboard showing flight arrivals and status (On Time, Landing Soon, Landed).
+*   🎟️ **Booking Management:** Users can view their booking history, print tickets, and generate/download PDF tickets.
+*   🏖️ **Holiday Packages & Hotels:** Dedicated premium sections for browsing and booking holiday packages and hotels.
+*   📱 **Fully Responsive:** A beautiful interface that adapts flawlessly to desktop, tablet, and mobile devices.
+*   ⚙️ **Secure Admin Dashboard:** Customized Jazzmin admin panel (`/flynova-admin/`) for managing flights, airports, bookings, and users securely.
 
-1.  **Clone the repository:**
-    ```bash
-    git clone <repository-url>
-    cd flynova
-    ```
+---
 
-2.  **Create a virtual environment:**
-    ```bash
-    python -m venv venv
-    source venv/bin/activate  # On Windows: venv\Scripts\activate
-    ```
+## 🛠️ 3. Tech Stack & Requirements
+*   **Backend:** Python 3.8+, Django 5.2.8
+*   **Database:** PostgreSQL (with `psycopg2-binary`)
+*   **Frontend:** HTML5, CSS3, Bootstrap 5, FontAwesome, Google Fonts (Poppins)
+*   **Authentication:** `django-allauth` (Social Authentication)
+*   **Utilities:** `pillow` (Images), `reportlab` (PDFs), `django-environ` (Environment Variables)
 
-3.  **Install dependencies:**
-    ```bash
-    pip install -r requirements.txt
-    ```
+---
 
-4.  **Apply migrations:**
-    ```bash
-    python manage.py migrate
-    ```
+## 🚀 4. Installation & Setup
 
-5.  **Create a superuser (optional):**
-    ```bash
-    python manage.py createsuperuser
-    ```
+Follow these steps to get your development environment running:
 
-## 5. Environment Variables
-The project uses the following environment variables (configured in `config/settings.py`). For production, these should be set in a `.env` file or environment configuration:
+**1. Clone the repository:**
+```bash
+git clone <repository-url>
+cd flynova
+```
 
-*   `SECRET_KEY`: Django secret key.
-*   `DEBUG`: Set to `True` for development, `False` for production.
-*   `EMAIL_HOST_USER`: Email address for sending notifications (currently configured for Gmail).
-*   `EMAIL_HOST_PASSWORD`: App password for the email account.
-*   `GOOGLE_OAUTH_CLIENT_ID`: Client ID for Google OAuth.
-*   `GOOGLE_OAUTH_SECRET`: Client Secret for Google OAuth.
+**2. Create and activate a virtual environment:**
+```bash
+python -m venv venv
+# On Windows:
+venv\Scripts\activate
+# On Mac/Linux:
+source venv/bin/activate
+```
 
-## 6. Settings Summary
-The main settings are located in `config/settings.py`:
-*   **INSTALLED_APPS:** Includes core Django apps, `allauth` for authentication, and custom apps (`core`, `flights`, `hotels`, `packages`, `bookings`, `accounts`).
-*   **MIDDLEWARE:** Standard Django middleware plus `allauth.account.middleware.AccountMiddleware`.
-*   **TEMPLATES:** Configured to use Django templates with `allauth` context processors.
-*   **DATABASES:** SQLite is used for development.
-*   **AUTH_USER_MODEL:** Custom user model `accounts.CustomUser`.
-*   **EMAIL_BACKEND:** SMTP backend configured for Gmail.
-*   **SOCIALACCOUNT_PROVIDERS:** Configuration for Google OAuth.
+**3. Install dependencies:**
+```bash
+pip install -r requirements.txt
+```
 
-## 7. Run Locally
+**4. Set up Environment Variables:**
+Copy the example environment file and fill in your credentials (including your PostgreSQL database info):
+```bash
+cp .env.example .env
+```
 
-To run the development server:
+**5. Database Setup (PostgreSQL):**
+Ensure PostgreSQL is running and your database is created as specified in your `.env` file, then run:
+```bash
+python manage.py migrate
+```
 
+**6. Create a Superuser:**
+```bash
+python manage.py createsuperuser
+```
+
+**7. Run the Application:**
 ```bash
 python manage.py runserver
 ```
+Visit `http://127.0.0.1:8000/` in your browser.
 
-Access the application at `http://127.0.0.1:8000/`.
+---
 
-## 8. Project Structure
+## 🔒 5. Environment Variables (`.env`)
+For security, FlyNova uses `django-environ` to keep secrets out of the codebase. Your `.env` file must include:
+*   `SECRET_KEY`: Django secret key.
+*   `DEBUG`: `True` for development, `False` for production.
+*   `ALLOWED_HOSTS`: Comma-separated list of allowed domain names.
+*   `DATABASE_URL`: Connection string (e.g., `postgres://user:password@localhost:5432/dbname`).
+*   `EMAIL_HOST_USER` / `EMAIL_HOST_PASSWORD`: SMTP credentials for sending emails.
+*   `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`: OAuth credentials for Google Login.
+*   `SSLCOMMERZ_STORE_ID` / `SSLCOMMERZ_STORE_PASSWORD`: Payment gateway credentials.
 
-```
+---
+
+## 📁 6. Project Structure
+```text
 flynova/
-├── accounts/           # User authentication and custom user model
-├── bookings/           # Booking logic and management
-├── config/             # Project configuration (settings, urls)
-├── core/               # Core functionality (home page, etc.)
-├── flights/            # Flight management, search, and airport info
-├── hotels/             # Hotel management
-├── packages/           # Holiday package management
+├── accounts/           # User authentication and profiles
+├── bookings/           # Booking logic and payment generation
+├── config/             # Project configuration (settings.py, urls.py)
+├── core/               # Core routing and Home page
+├── flights/            # Flight management and search algorithms
+├── hotels/             # Hotel booking management
+├── packages/           # Holiday packages
 ├── media/              # User-uploaded content (images)
-├── static/             # Static files (CSS, JS, images)
-├── templates/          # HTML templates
-│   ├── account/        # Allauth templates
-│   ├── accounts/       # Custom auth templates
-│   ├── bookings/       # Booking templates
-│   ├── flights/        # Flight templates
-│   ├── socialaccount/  # Social auth templates
-│   └── base.html       # Base template
-├── db.sqlite3          # SQLite database
+├── static/             # Static assets (CSS, JS, images, videos)
+├── templates/          # HTML templates (Django templating)
+├── .env.example        # Environment variables template
 ├── manage.py           # Django management script
 └── requirements.txt    # Project dependencies
 ```
 
-## 9. Production Tips
-*   **Debug Mode:** Ensure `DEBUG = False` in production.
-*   **Secret Key:** Use a strong, unique `SECRET_KEY` and keep it secret.
-*   **Database:** Switch to a more robust database like PostgreSQL for production.
-*   **Static Files:** Configure `STATIC_ROOT` and use a web server (like Nginx or Apache) or a service like WhiteNoise to serve static files.
-*   **HTTPS:** Always use HTTPS in production.
-*   **Allowed Hosts:** Update `ALLOWED_HOSTS` with your domain name.
+---
 
-## 10. Credits
-Developed by **Md. Shariful Islam Rony**.
-*   **Framework:** Django
-*   **Styling:** Bootstrap 5, Custom CSS
-*   **Icons:** FontAwesome
-*   **Fonts:** Google Fonts (Poppins)
+## 🛡️ 7. Production Security Readiness
+This project has been heavily audited and secured for live production environments:
+*   **Database:** Fully migrated to PostgreSQL.
+*   **Admin Protection:** Default `/admin/` URL changed to prevent automated brute-force attacks.
+*   **HTTPS/SSL Enforced:** Secure cookies and SSL redirects are automatically enabled when `DEBUG = False`.
+*   **Secrets Management:** All sensitive API keys and database passwords are read securely from the `.env` file.
+*   **Static Files:** Configured with `STATIC_ROOT` ready for `collectstatic` deployment.
+
+---
+
+## 👨‍💻 8. Credits
+Architected and Developed by **Md. Shariful Islam Rony**.

@@ -2,87 +2,321 @@
 
 {% block title %}Holiday Packages - FlyNova{% endblock %}
 
-{% block content %}
-<div class="container my-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Holiday Packages</h2>
-        <div class="d-flex align-items-center">
-            <div class="btn-group me-3" role="group" aria-label="Price Filter">
-                <a href="?{% if request.GET.destination %}destination={{ request.GET.destination }}&{% endif %}price_range=low"
-                    class="btn btn-outline-primary {% if request.GET.price_range == 'low' %}active{% endif %}">Low</a>
-                <a href="?{% if request.GET.destination %}destination={{ request.GET.destination }}&{% endif %}price_range=mid"
-                    class="btn btn-outline-primary {% if request.GET.price_range == 'mid' %}active{% endif %}">Mid</a>
-                <a href="?{% if request.GET.destination %}destination={{ request.GET.destination }}&{% endif %}price_range=high"
-                    class="btn btn-outline-primary {% if request.GET.price_range == 'high' %}active{% endif %}">High</a>
-                {% if request.GET.price_range %}
-                <a href="?{% if request.GET.destination %}destination={{ request.GET.destination }}{% endif %}"
-                    class="btn btn-outline-secondary">Clear</a>
-                {% endif %}
-            </div>
-            <form action="{% url 'search_packages' %}" method="GET" class="d-flex">
-                {% if request.GET.price_range %}
-                <input type="hidden" name="price_range" value="{{ request.GET.price_range }}">
-                {% endif %}
-                <input type="text" name="destination" class="form-control me-2" placeholder="Destination"
-                    value="{{ request.GET.destination|default:'' }}">
-                <button type="submit" class="btn btn-primary">Search</button>
-            </form>
-        </div>
-    </div>
+{% block extra_css %}
+<style>
+    body {
+        background-color: #f0f2f5;
+        font-family: 'Inter', sans-serif;
+    }
 
-    {% if packages %}
+    /* Top Search Bar */
+    .top-search-bar {
+        background: #003580; /* Consistent with flights */
+        padding: 20px 0;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .top-search-bar .form-control {
+        border: none;
+        border-radius: 8px;
+        padding: 12px 15px;
+        font-weight: 500;
+    }
+
+    .top-search-bar .btn-update {
+        background: #0071c2;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 12px;
+        font-weight: 600;
+        width: 100%;
+        transition: background 0.3s;
+    }
+    
+    .top-search-bar .btn-update:hover {
+        background: #005999;
+    }
+
+    /* Filters Section */
+    .filter-card {
+        background: white;
+        border-radius: 12px;
+        border: none;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    .price-pills {
+        border-radius: 20px;
+        padding: 8px 20px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: all 0.2s;
+        border: 1px solid #dee2e6;
+        color: #495057;
+        text-decoration: none;
+        display: block;
+        margin-bottom: 8px;
+    }
+
+    .price-pills:hover {
+        background-color: #f8f9fa;
+        color: #212529;
+    }
+
+    .price-pills.active {
+        background: #e8f0fe;
+        color: #1a73e8;
+        border-color: #1a73e8;
+    }
+
+    /* Package Cards */
+    .package-card {
+        background: white;
+        border-radius: 12px;
+        border: none;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        transition: transform 0.2s, box-shadow 0.2s;
+        overflow: hidden;
+        margin-bottom: 25px;
+    }
+
+    .package-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    }
+
+    .package-img-container {
+        position: relative;
+        height: 100%;
+        min-height: 250px;
+    }
+
+    .package-img-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        position: absolute;
+    }
+    
+    .duration-badge {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        backdrop-filter: blur(4px);
+    }
+
+    .package-details-sec {
+        padding: 25px;
+    }
+
+    .package-title {
+        font-weight: 800;
+        color: #212529;
+        font-size: 1.5rem;
+        margin-bottom: 8px;
+    }
+
+    .package-location {
+        color: #0071c2;
+        font-weight: 600;
+        font-size: 1rem;
+        margin-bottom: 15px;
+    }
+
+    .package-overview {
+        color: #6c757d;
+        font-size: 0.95rem;
+        line-height: 1.6;
+        margin-bottom: 20px;
+    }
+
+    /* Price & Action Section */
+    .package-price-sec {
+        background: #f8f9fa;
+        padding: 25px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        border-left: 1px solid #ebebeb;
+        height: 100%;
+    }
+
+    .price-label {
+        font-size: 0.85rem;
+        color: #6c757d;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .total-price {
+        font-size: 2rem;
+        font-weight: 800;
+        color: #0071c2;
+        margin-bottom: 15px;
+    }
+
+    .btn-view-details {
+        background: white;
+        color: #0071c2;
+        border: 1px solid #0071c2;
+        border-radius: 8px;
+        padding: 10px 20px;
+        font-weight: 600;
+        width: 100%;
+        margin-bottom: 10px;
+        transition: all 0.3s;
+    }
+    
+    .btn-view-details:hover {
+        background: #f0f8ff;
+    }
+
+    .btn-book-now {
+        background: #0071c2;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 20px;
+        font-weight: 700;
+        width: 100%;
+        transition: background 0.3s;
+    }
+
+    .btn-book-now:hover {
+        background: #005999;
+    }
+
+    @media (max-width: 767px) {
+        .package-img-container {
+            height: 250px;
+        }
+        .package-price-sec {
+            border-left: none;
+            border-top: 1px solid #ebebeb;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Top Search Bar -->
+<div class="top-search-bar">
+    <div class="container">
+        <form action="{% url 'search_packages' %}" method="GET" class="row g-2 justify-content-center">
+            {% if request.GET.price_range %}
+            <input type="hidden" name="price_range" value="{{ request.GET.price_range }}">
+            {% endif %}
+            <div class="col-md-6 col-lg-5">
+                <input type="text" name="destination" class="form-control" placeholder="Search by destination (e.g. Maldives, Paris)" value="{{ request.GET.destination|default:'' }}">
+            </div>
+            <div class="col-md-3 col-lg-2">
+                <button type="submit" class="btn-update"><i class="fas fa-search me-2"></i>Search Packages</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="container">
     <div class="row">
-        {% for package in packages %}
-        <div class="col-12 mb-4">
-            <div class="card shadow-sm border-0 overflow-hidden">
-                <div class="row g-0">
-                    <div class="col-md-5">
-                        {% if package.image %}
-                        <img src="{{ package.image.url }}" class="img-fluid h-100 w-100" alt="{{ package.title }}"
-                            style="object-fit: cover; min-height: 250px;">
-                        {% else %}
-                        <img src="https://placehold.co/600x400?text=Holiday" class="img-fluid h-100 w-100"
-                            style="object-fit: cover; min-height: 250px;">
-                        {% endif %}
-                    </div>
-                    <div class="col-md-7">
-                        <div class="card-body p-4 d-flex flex-column h-100">
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                <h3 class="card-title mb-0">{{ package.title }}</h3>
-                                <div class="text-muted">
-                                    <i class="far fa-clock me-1"></i> {{ package.duration_days }} Days / {{
-                                    package.duration_nights }} Nights
+        <!-- Sidebar Filters -->
+        <div class="col-lg-3 mb-4">
+            <div class="filter-card">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="fw-bold m-0">Filters</h5>
+                    {% if request.GET.price_range %}
+                    <a href="?{% if request.GET.destination %}destination={{ request.GET.destination }}{% endif %}" class="text-danger small text-decoration-none fw-bold">Clear All</a>
+                    {% endif %}
+                </div>
+                
+                <h6 class="mb-3 fw-bold text-muted">Price Range</h6>
+                <div class="d-flex flex-column">
+                    <a href="?{% if request.GET.destination %}destination={{ request.GET.destination }}&{% endif %}price_range=low"
+                        class="price-pills text-center {% if request.GET.price_range == 'low' %}active{% endif %}">
+                        Budget (Low)
+                    </a>
+                    <a href="?{% if request.GET.destination %}destination={{ request.GET.destination }}&{% endif %}price_range=mid"
+                        class="price-pills text-center {% if request.GET.price_range == 'mid' %}active{% endif %}">
+                        Standard (Mid)
+                    </a>
+                    <a href="?{% if request.GET.destination %}destination={{ request.GET.destination }}&{% endif %}price_range=high"
+                        class="price-pills text-center {% if request.GET.price_range == 'high' %}active{% endif %}">
+                        Premium (High)
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Package Results -->
+        <div class="col-lg-9">
+            <div class="mb-4">
+                <h4 class="fw-bold m-0">Discover Packages</h4>
+                <p class="text-muted small">{{ packages|length }} package{{ packages|pluralize }} found.</p>
+            </div>
+
+            {% if packages %}
+                {% for package in packages %}
+                <div class="package-card">
+                    <div class="row g-0 h-100">
+                        <!-- Image -->
+                        <div class="col-md-4">
+                            <div class="package-img-container">
+                                {% if package.image %}
+                                <img src="{% if 'http' in package.image.name %}{{ package.image }}{% else %}{{ package.image.url }}{% endif %}" alt="{{ package.title }}">
+                                {% else %}
+                                <img src="https://placehold.co/600x400?text=Holiday" alt="No Image">
+                                {% endif %}
+                                <div class="duration-badge">
+                                    <i class="far fa-clock me-1"></i> {{ package.duration_days }}D / {{ package.duration_nights }}N
                                 </div>
                             </div>
-                            <p class="text-primary mb-3"><i class="fas fa-map-marker-alt"></i> {{ package.destination }}
-                            </p>
+                        </div>
 
-                            <p class="card-text text-muted flex-grow-1">{{ package.overview|truncatechars:200 }}</p>
-
-                            <div class="row align-items-center mt-3">
-                                <div class="col-6">
-                                    <small class="text-muted">Starting from</small>
-                                    <h2 class="text-primary mb-0">BDT {{ package.price }}</h2>
+                        <!-- Details -->
+                        <div class="col-md-5">
+                            <div class="package-details-sec">
+                                <h3 class="package-title">{{ package.title }}</h3>
+                                <div class="package-location">
+                                    <i class="fas fa-map-marker-alt me-1"></i> {{ package.destination }}
                                 </div>
-                                <div class="col-6 text-end">
-                                    <a href="{% url 'package_detail' package.pk %}"
-                                        class="btn btn-outline-primary me-2">View Details</a>
-                                    <a href="{% url 'create_booking' 'package' package.pk %}"
-                                        class="btn btn-primary">Book Now</a>
+                                <p class="package-overview">{{ package.overview|truncatechars:180 }}</p>
+                            </div>
+                        </div>
+
+                        <!-- Price & Action -->
+                        <div class="col-md-3">
+                            <div class="package-price-sec text-center">
+                                <div class="price-label">Starting From</div>
+                                <h2 class="total-price">BDT {{ package.price }}</h2>
+                                
+                                <div class="w-100 mt-2">
+                                    <a href="{% url 'package_detail' package.pk %}" class="btn btn-view-details">View Details</a>
+                                    <a href="{% url 'create_booking' 'package' package.pk %}" class="btn btn-book-now">Book Now</a>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+                {% endfor %}
+            {% else %}
+                <div class="text-center py-5 bg-white rounded shadow-sm">
+                    <i class="fas fa-umbrella-beach fa-4x text-muted mb-3"></i>
+                    <h4 class="fw-bold">No packages found</h4>
+                    <p class="text-muted">We are adding exciting new destinations soon!</p>
+                </div>
+            {% endif %}
         </div>
-        {% endfor %}
     </div>
-    {% else %}
-    <div class="alert alert-info text-center p-5">
-        <h4>No packages found.</h4>
-        <p>We are adding new destinations soon!</p>
-    </div>
-    {% endif %}
 </div>
 {% endblock %}

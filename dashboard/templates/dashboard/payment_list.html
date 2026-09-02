@@ -1,0 +1,65 @@
+{% extends 'dashboard/base_admin.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="page-title">{{ title }}</h1>
+</div>
+
+<div class="premium-card">
+    <div class="table-responsive">
+        <table class="table align-middle mb-0" style="border-collapse: separate; border-spacing: 0;">
+            <thead class="text-muted" style="font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 600;">
+                <tr>
+                    <th scope="col" class="py-4 ps-4 border-bottom border-top-0" style="border-color: #F1F5F9;">Transaction ID</th>
+                    <th scope="col" class="py-4 border-bottom border-top-0" style="border-color: #F1F5F9;">Booking</th>
+                    <th scope="col" class="py-4 border-bottom border-top-0" style="border-color: #F1F5F9;">Method</th>
+                    <th scope="col" class="py-4 border-bottom border-top-0" style="border-color: #F1F5F9;">Amount</th>
+                    <th scope="col" class="py-4 border-bottom border-top-0" style="border-color: #F1F5F9;">Date</th>
+                    <th scope="col" class="py-4 border-bottom border-top-0" style="border-color: #F1F5F9;">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for payment in payments %}
+                <tr class="table-row-hover">
+                    <td class="py-4 ps-4 fw-medium text-dark border-bottom" style="border-color: #F8FAFC; font-size: 0.95rem;">
+                        {{ payment.transaction_id|default:"N/A" }}
+                        {% if payment.card_last4 %}
+                            <div class="small mt-1 text-muted">**** {{ payment.card_last4 }}</div>
+                        {% endif %}
+                    </td>
+                    <td class="py-4 border-bottom" style="border-color: #F8FAFC;">
+                        <a href="#" class="fw-semibold text-primary text-decoration-none" style="font-size: 0.95rem;">#{{ payment.booking.id }}</a>
+                        <div class="small mt-1 text-muted">{{ payment.booking.user.email }}</div>
+                    </td>
+                    <td class="py-4 border-bottom" style="border-color: #F8FAFC;">
+                        <div class="fw-medium text-dark" style="font-size: 0.95rem;">
+                            <i class="fas fa-money-check-alt text-info me-2 opacity-75"></i> {{ payment.get_payment_method_display }}
+                        </div>
+                    </td>
+                    <td class="py-4 fw-semibold text-dark border-bottom" style="border-color: #F8FAFC; font-size: 0.95rem;">BDT {{ payment.amount }}</td>
+                    <td class="py-4 border-bottom" style="border-color: #F8FAFC;">
+                        <div class="fw-medium text-dark" style="font-size: 0.95rem;">{{ payment.timestamp|date:"d M Y" }}</div>
+                        <div class="small mt-1 text-muted">{{ payment.timestamp|time:"H:i" }}</div>
+                    </td>
+                    <td class="py-4 border-bottom" style="border-color: #F8FAFC;">
+                        {% if payment.status == 'SUCCESS' %}
+                            <span class="badge-premium badge-success"><i class="fas fa-circle me-1" style="font-size: 6px; vertical-align: middle;"></i> Success</span>
+                        {% else %}
+                            <span class="badge-premium badge-danger"><i class="fas fa-circle me-1" style="font-size: 6px; vertical-align: middle;"></i> Failed</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center py-5 text-muted">
+                        <i class="fas fa-receipt fa-3x mb-3 text-light"></i>
+                        <h5>No payments found</h5>
+                        <p>There are no transactions recorded yet.</p>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

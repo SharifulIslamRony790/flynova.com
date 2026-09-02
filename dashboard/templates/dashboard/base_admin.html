@@ -1,0 +1,122 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlyNova Dashboard - {{ title }}</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom Design System -->
+    <link rel="stylesheet" href="{% static 'css/admin_premium.css' %}">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    
+    <!-- Sidebar -->
+    <nav id="sidebar">
+        <div class="sidebar-header">
+            <a href="{% url 'dashboard:home' %}" class="sidebar-brand">
+                <i class="fas fa-plane-departure" style="color: #3da5d9;"></i> 
+                FlyNova Admin
+            </a>
+        </div>
+        
+        <ul class="sidebar-menu">
+            <div class="menu-section">Overview</div>
+            <li>
+                <a href="{% url 'dashboard:home' %}" class="menu-item {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+                    <i class="fas fa-chart-pie"></i> Dashboard
+                </a>
+            </li>
+            
+            <div class="menu-section">Bookings & Revenue</div>
+            <li>
+                <a href="{% url 'dashboard:booking_list' %}" class="menu-item {% if request.resolver_match.url_name == 'booking_list' %}active{% endif %}">
+                    <i class="fas fa-ticket-alt"></i> All Bookings
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'dashboard:payment_list' %}" class="menu-item {% if request.resolver_match.url_name == 'payment_list' %}active{% endif %}">
+                    <i class="fas fa-wallet"></i> Payments
+                </a>
+            </li>
+            
+            <div class="menu-section">Operations</div>
+            <li>
+                <a href="{% url 'dashboard:flight_list' %}" class="menu-item {% if request.resolver_match.url_name == 'flight_list' or request.resolver_match.url_name == 'flight_create' or request.resolver_match.url_name == 'flight_update' %}active{% endif %}">
+                    <i class="fas fa-plane"></i> Flights Schedule
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'dashboard:hotel_list' %}" class="menu-item {% if request.resolver_match.url_name == 'hotel_list' or request.resolver_match.url_name == 'hotel_create' or request.resolver_match.url_name == 'hotel_update' %}active{% endif %}">
+                    <i class="fas fa-hotel"></i> Hotels
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'dashboard:package_list' %}" class="menu-item {% if request.resolver_match.url_name == 'package_list' or request.resolver_match.url_name == 'package_create' or request.resolver_match.url_name == 'package_update' %}active{% endif %}">
+                    <i class="fas fa-umbrella-beach"></i> Holiday Packages
+                </a>
+            </li>
+            
+            <div class="menu-section">System</div>
+            <li>
+                <a href="{% url 'dashboard:customer_list' %}" class="menu-item {% if request.resolver_match.url_name == 'customer_list' %}active{% endif %}">
+                    <i class="fas fa-users"></i> Customers
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'home' %}" target="_blank" class="menu-item">
+                    <i class="fas fa-external-link-alt"></i> View Live Site
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'logout' %}" class="menu-item text-danger">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </li>
+        </ul>
+    </nav>
+    
+    <!-- Main Content -->
+    <div id="main-content">
+        <!-- Topbar -->
+        <header class="topbar">
+            <div class="topbar-left">
+                <h1 class="page-title">{{ title }}</h1>
+            </div>
+            <div class="topbar-right">
+                <div class="dropdown">
+                    <button class="btn btn-light rounded-circle" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-user text-primary"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
+                        <li><h6 class="dropdown-header">{{ user.email }}</h6></li>
+                        <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Page Content -->
+        <main class="p-4" style="background-color: var(--surface-bg);">
+            {% block content %}
+            {% endblock %}
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

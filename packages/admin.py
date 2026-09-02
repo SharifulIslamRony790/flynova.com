@@ -1,11 +1,25 @@
+# ==========================================
+# PACKAGES APP ADMIN CONFIGURATION
+# ==========================================
+# This file registers the package and itinerary models with Django's built-in admin panel.
+# Features included: PackageAdmin and ItineraryInline.
+
 from django.contrib import admin
 from django.utils.html import format_html
 from .models import Package, Itinerary
 
+# ---------------------------------------------------------
+# 1. INLINE ITINERARY ADMIN
+# ---------------------------------------------------------
+# Allows itinerary days to be added directly within the Package admin page.
 class ItineraryInline(admin.TabularInline):
     model = Itinerary
     extra = 1
 
+# ---------------------------------------------------------
+# 2. PACKAGE ADMIN
+# ---------------------------------------------------------
+# Customizes how holiday packages are displayed, filtered, and searched.
 @admin.register(Package)
 class PackageAdmin(admin.ModelAdmin):
     list_display = ('title', 'destination', 'duration_days', 'price', 'image_tag')

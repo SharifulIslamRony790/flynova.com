@@ -12,30 +12,41 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
-from dotenv import load_dotenv
-
-# Load environment variables from .env file
-load_dotenv()
+import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Initialize environ
+env = environ.Env(
+    DEBUG=(bool, False)
+)
+# Reading .env file
+environ.Env.read_env(BASE_DIR / '.env')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-anng1=@67#=!a#6t_i&+1759n3@nnt7hht66a_s3x%aab#+hun')
+SECRET_KEY = env('SECRET_KEY', default='django-insecure-anng1=@67#=!a#6t_i&+1759n3@nnt7hht66a_s3x%aab#+hun')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = ['*', 'testserver']
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['127.0.0.1', 'localhost'])
 
+# HTTPS and Security Settings for Production
+if not DEBUG:
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
 
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -51,14 +62,19 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
 
     # Custom Apps
+    'dashboard',
     'accounts',
     'core',
     'flights',
     'hotels',
     'packages',
     'bookings',
-
+    'crispy_forms',
+    'crispy_bootstrap5',
 ]
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -95,10 +111,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': env.db('DATABASE_URL', default='postgres://fly_nova:flynova123@localhost:5432/flynova_db')
 }
 
 
@@ -136,7 +149,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -151,15 +169,14 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'mdsharifulislamrony790@gmail.com'
-EMAIL_HOST_PASSWORD = 'jsdl abhe uoak bndw'
+EMAIL_HOST_USER = env('EMAIL_HOST_USER', default='')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', default='')
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-STATICFILES_DIRS = [BASE_DIR / 'static']
 
 # Django Allauth Configuration
 SITE_ID = 1
@@ -172,9 +189,8 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 # Allauth Settings
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
+ACCOUNT_LOGIN_METHODS = {'email'}
 ACCOUNT_EMAIL_VERIFICATION = 'optional'
 SOCIALACCOUNT_AUTO_SIGNUP = True
 SOCIALACCOUNT_EMAIL_VERIFICATION = 'optional'
@@ -197,5 +213,108 @@ SOCIALACCOUNT_PROVIDERS = {
             'key': ''
         }
     }
+}
+
+# SSLCommerz Configuration
+SSLCOMMERZ_STORE_ID = env('SSLCOMMERZ_STORE_ID', default='your_store_id')
+SSLCOMMERZ_STORE_PASSWORD = env('SSLCOMMERZ_STORE_PASSWORD', default='your_store_password')
+SSLCOMMERZ_IS_SANDBOX = env.bool('SSLCOMMERZ_IS_SANDBOX', default=True)
+
+# -----------------------------------------------------------------------------
+# JAZZMIN ADMIN PANEL SETTINGS
+# -----------------------------------------------------------------------------
+JAZZMIN_SETTINGS = {
+    "site_title": "FlyNova Admin",
+    "site_header": "FlyNova",
+    "site_brand": "FlyNova Management",
+    "site_logo": "img/logo.png",
+    "login_logo": "img/logo.png",
+    "login_logo_dark": None,
+    "site_logo_classes": "img-fluid",
+    "site_icon": None,
+    "welcome_sign": "Welcome to FlyNova Admin Panel",
+    "copyright": "FlyNova Ltd",
+    "search_model": ["auth.User", "bookings.Booking"],
+    "user_avatar": None,
+    
+    "topmenu_links": [
+        {"name": "Home",  "url": "admin:index", "permissions": ["auth.view_user"]},
+        {"name": "View Site", "url": "/", "new_window": True},
+    ],
+    
+    "show_sidebar": True,
+    "navigation_expanded": True,
+    
+    "order_with_respect_to": [
+        "bookings",
+        "flights",
+        "hotels",
+        "packages",
+        "accounts",
+        "auth",
+    ],
+    
+    "icons": {
+        "auth": "fas fa-users-cog",
+        "auth.user": "fas fa-user",
+        "auth.Group": "fas fa-users",
+        
+        "accounts.CustomUser": "fas fa-users",
+        
+        "bookings.Booking": "fas fa-ticket-alt",
+        "bookings.Payment": "fas fa-money-bill-wave",
+        
+        "flights.Airline": "fas fa-building",
+        "flights.Airport": "fas fa-plane-departure",
+        "flights.Flight": "fas fa-plane",
+        
+        "hotels.Hotel": "fas fa-hotel",
+        "hotels.Room": "fas fa-bed",
+        
+        "packages.Package": "fas fa-umbrella-beach",
+    },
+    
+    "default_icon_parents": "fas fa-chevron-circle-right",
+    "default_icon_children": "fas fa-circle",
+    
+    "related_modal_active": False,
+    
+    "custom_css": None,
+    "custom_js": None,
+    
+    "show_ui_builder": False,
+}
+
+JAZZMIN_UI_TWEAKS = {
+    "navbar_small_text": False,
+    "footer_small_text": False,
+    "body_small_text": False,
+    "brand_small_text": False,
+    "brand_colour": "navbar-primary",
+    "accent": "accent-primary",
+    "navbar": "navbar-primary navbar-dark",
+    "no_navbar_border": False,
+    "navbar_fixed": False,
+    "layout_boxed": False,
+    "footer_fixed": False,
+    "sidebar_fixed": True,
+    "sidebar": "sidebar-dark-primary",
+    "sidebar_nav_small_text": False,
+    "sidebar_disable_expand": False,
+    "sidebar_nav_child_indent": False,
+    "sidebar_nav_compact_style": False,
+    "sidebar_nav_legacy_style": False,
+    "sidebar_nav_flat_style": False,
+    "theme": "flatly",
+    "dark_mode_theme": "darkly",
+    "button_classes": {
+        "primary": "btn-primary",
+        "secondary": "btn-secondary",
+        "info": "btn-info",
+        "warning": "btn-warning",
+        "danger": "btn-danger",
+        "success": "btn-success"
+    },
+    "actions_sticky_top": False
 }
 

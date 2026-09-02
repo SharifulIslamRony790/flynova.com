@@ -2,250 +2,236 @@
 
 {% block title %}Checkout - FlyNova{% endblock %}
 
+{% block extra_css %}
+<style>
+    body {
+        background-color: #f0f2f5;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .checkout-header {
+        background: #003580;
+        padding: 40px 0;
+        color: white;
+        margin-bottom: 40px;
+    }
+
+    .checkout-header h2 {
+        font-weight: 800;
+        margin-bottom: 5px;
+    }
+
+    .card-checkout {
+        background: white;
+        border-radius: 12px;
+        border: none;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        margin-bottom: 25px;
+    }
+
+    .card-checkout .card-header {
+        background: white;
+        border-bottom: 1px solid #ebebeb;
+        padding: 20px 25px;
+        border-radius: 12px 12px 0 0;
+        font-weight: 700;
+        font-size: 1.2rem;
+    }
+
+    .card-checkout .card-body {
+        padding: 25px;
+    }
+
+    /* Summary Card */
+    .summary-card {
+        background: #001f4d; /* Very dark blue for contrast */
+        color: white;
+        border-radius: 12px;
+        padding: 30px;
+        position: sticky;
+        top: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+
+    .summary-card h4 {
+        font-weight: 700;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        padding-bottom: 15px;
+        margin-bottom: 20px;
+    }
+
+    .summary-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 15px;
+        color: #d1e2fa;
+    }
+
+    .summary-item span:last-child {
+        font-weight: 600;
+        color: white;
+        text-align: right;
+    }
+
+    .summary-total {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid rgba(255,255,255,0.1);
+        padding-top: 20px;
+        margin-top: 20px;
+    }
+
+    .summary-total h3 {
+        font-weight: 800;
+        color: #66c2ff;
+        margin: 0;
+    }
+
+    /* Payment Gateway */
+    .payment-logos {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+        margin: 20px 0;
+    }
+
+    .payment-logos img {
+        height: 30px;
+        object-fit: contain;
+    }
+
+    .btn-pay-now {
+        background: #198754;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 15px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        width: 100%;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .btn-pay-now:hover {
+        background: #157347;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(25,135,84,0.3);
+    }
+    
+    .cancel-link {
+        display: block;
+        text-align: center;
+        margin-top: 20px;
+        color: #6c757d;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.2s;
+    }
+    
+    .cancel-link:hover {
+        color: #dc3545;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container my-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0">Confirm Your Booking</h4>
+<div class="checkout-header">
+    <div class="container">
+        <h2>Secure Checkout</h2>
+        <p class="text-white-50 m-0">Review your details and complete payment to confirm your booking.</p>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <div class="row">
+        <!-- Main Checkout Column -->
+        <div class="col-lg-8 mb-4">
+            
+            <!-- Traveler Info -->
+            <div class="card-checkout">
+                <div class="card-header">
+                    <i class="fas fa-user-circle me-2 text-primary"></i> Traveler Details
                 </div>
-                <div class="card-body p-4">
-                    <h5 class="card-title mb-4">Booking Summary</h5>
-
-                    <div class="alert alert-light border">
-                        <strong>{{ summary }}</strong>
-                    </div>
-
-                    <div class="row mb-4">
-                        <div class="col-md-6">
-                            <p class="text-muted mb-1">Traveler Name</p>
-                            <h6>{{ user.get_full_name|default:user.username }}</h6>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="text-muted small fw-bold mb-1">Full Name</label>
+                            <div class="fs-5 fw-semibold">{{ user.get_full_name|default:user.username }}</div>
                         </div>
-                        <div class="col-md-6 text-end">
-                            <p class="text-muted mb-1">Total Price</p>
-                            <h3 class="text-primary">BDT {{ price }}</h3>
+                        <div class="col-md-6 mb-3">
+                            <label class="text-muted small fw-bold mb-1">Email Address</label>
+                            <div class="fs-5">{{ user.email }}</div>
                         </div>
                     </div>
+                </div>
+            </div>
 
-                    <hr>
+            <!-- Payment Method -->
+            <div class="card-checkout">
+                <div class="card-header">
+                    <i class="fas fa-credit-card me-2 text-primary"></i> Payment Method
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-4">You will be redirected to SSLCommerz to complete your payment securely. All major credit/debit cards and mobile banking are supported.</p>
+                    
+                    <div class="payment-logos">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/Visa_Logo.png" alt="Visa">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard">
+                        <img src="https://seeklogo.com/images/B/bkash-logo-835789094A-seeklogo.com.png" alt="bKash">
+                        <img src="https://seeklogo.com/images/N/nagad-logo-7A70CCFEE0-seeklogo.com.png" alt="Nagad">
+                    </div>
 
-                    <form method="post" id="payment-form">
+                    <form method="post" id="payment-form" class="mt-4">
                         {% csrf_token %}
-
                         {% if form.errors %}
                         <div class="alert alert-danger">
                             {{ form.errors }}
                         </div>
                         {% endif %}
-
-                        <!-- Step 1: Select Method -->
-                        <div id="step-select-method">
-                            <h5 class="mb-3">Select payment method</h5>
-                            <p class="text-muted small mb-4">Preferred method with secure transactions.</p>
-
-                            <!-- EXPLICIT HIDDEN INPUT FOR METHOD -->
-                            <input type="hidden" name="payment_method" id="id_payment_method" required>
-
-                            <div class="payment-methods-list d-grid gap-3">
-                                <!-- Visa -->
-                                <div class="payment-card p-3 border rounded d-flex align-items-center justify-content-between cursor-pointer"
-                                    onclick="selectMethod('VISA', this)">
-                                    <div class="d-flex align-items-center gap-3">
-                                        <div class="logo-box">
-                                            <img src="https://upload.wikimedia.org/wikipedia/commons/4/41/Visa_Logo.png"
-                                                height="20" alt="Visa">
-                                        </div>
-                                        <span class="fw-medium">Pay with Visa</span>
-                                    </div>
-                                    <i class="fas fa-check-circle text-primary opacity-0 check-icon"></i>
-                                </div>
-
-                                <!-- Mastercard -->
-                                <div class="payment-card p-3 border rounded d-flex align-items-center justify-content-between cursor-pointer"
-                                    onclick="selectMethod('MASTERCARD', this)">
-                                    <div class="d-flex align-items-center gap-3">
-                                        <div class="logo-box">
-                                            <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg"
-                                                height="24" alt="Mastercard">
-                                        </div>
-                                        <span class="fw-medium">Pay with Mastercard</span>
-                                    </div>
-                                    <i class="fas fa-check-circle text-primary opacity-0 check-icon"></i>
-                                </div>
-
-                                <!-- bKash -->
-                                <div class="payment-card p-3 border rounded d-flex align-items-center justify-content-between cursor-pointer"
-                                    onclick="selectMethod('BKASH', this)">
-                                    <div class="d-flex align-items-center gap-3">
-                                        <div class="logo-box">
-                                            <img src="https://seeklogo.com/images/B/bkash-logo-835789094A-seeklogo.com.png"
-                                                height="24" alt="bKash">
-                                        </div>
-                                        <span class="fw-medium">Pay with bKash</span>
-                                    </div>
-                                    <i class="fas fa-check-circle text-primary opacity-0 check-icon"></i>
-                                </div>
-
-                                <!-- Nagad -->
-                                <div class="payment-card p-3 border rounded d-flex align-items-center justify-content-between cursor-pointer"
-                                    onclick="selectMethod('NAGAD', this)">
-                                    <div class="d-flex align-items-center gap-3">
-                                        <div class="logo-box">
-                                            <img src="https://seeklogo.com/images/N/nagad-logo-7A70CCFEE0-seeklogo.com.png"
-                                                height="20" alt="Nagad">
-                                        </div>
-                                        <span class="fw-medium">Pay with Nagad</span>
-                                    </div>
-                                    <i class="fas fa-check-circle text-primary opacity-0 check-icon"></i>
-                                </div>
-                            </div>
-
-                            <div class="d-grid gap-2 mt-4">
-                                <button type="button" class="btn btn-primary btn-lg" id="btn-continue" disabled
-                                    onclick="goToDetails()">Continue</button>
-                                <a href="{% url 'home' %}" class="btn btn-outline-secondary">Cancel</a>
-                            </div>
-                        </div>
-
-                        <!-- Step 2: Payment Details -->
-                        <div id="step-payment-details" style="display:none;">
-                            <div class="d-flex align-items-center mb-4">
-                                <button type="button" class="btn btn-sm btn-light border me-3" onclick="goBack()"><i
-                                        class="fas fa-arrow-left"></i></button>
-                                <h5 class="mb-0">Payment Details</h5>
-                            </div>
-
-                            <div class="alert alert-info border-0 bg-light">
-                                <i class="fas fa-lock me-2"></i> Secure Transaction via <span id="selected-method-name"
-                                    class="fw-bold"></span>
-                            </div>
-
-                            <!-- Mobile Banking Fields (bKash/Nagad) -->
-                            <div id="mobile-banking-fields" style="display:none;">
-                                <div class="mb-3">
-                                    <label class="form-label">Your Mobile Number</label>
-                                    <input type="text" name="mobile_number" class="form-control"
-                                        placeholder="01XXXXXXXXX" id="id_mobile_number">
-                                    <div class="form-text">Your bKash/Nagad account number.</div>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Transaction ID</label>
-                                    <input type="text" name="transaction_id" class="form-control"
-                                        placeholder="Enter Transaction ID" id="id_transaction_id">
-                                    <div class="form-text">Enter the transaction ID received after payment.</div>
-                                </div>
-                            </div>
-
-                            <!-- Card Fields (Visa/MasterCard) -->
-                            <div id="card-fields" style="display:none;">
-                                <div class="mb-3">
-                                    <label class="form-label">Card Number</label>
-                                    <input type="text" name="card_number" class="form-control"
-                                        placeholder="XXXX-XXXX-XXXX-XXXX">
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label">Expiry Date</label>
-                                        <input type="text" name="card_expiry" class="form-control" placeholder="MM/YY">
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label">CVC/CVV</label>
-                                        <input type="text" name="card_cvc" class="form-control" placeholder="123">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="d-grid gap-2 mt-4">
-                                <button type="submit" class="btn btn-success btn-lg">Pay & Confirm Booking</button>
-                            </div>
-                        </div>
+                        
+                        <button type="submit" class="btn-pay-now">
+                            <i class="fas fa-lock"></i> Pay BDT {{ price }} Securely
+                        </button>
                     </form>
+                    
+                    <a href="{% url 'home' %}" class="cancel-link">Cancel and return to home</a>
+                </div>
+            </div>
 
-                    <style>
-                        .payment-card {
-                            transition: all 0.2s;
-                            background: #fff;
-                        }
+        </div>
 
-                        .payment-card:hover {
-                            background: #f8f9fa;
-                            border-color: #dee2e6;
-                        }
+        <!-- Order Summary Sidebar -->
+        <div class="col-lg-4">
+            <div class="summary-card">
+                <h4>Booking Summary</h4>
+                
+                <div class="summary-item">
+                    <span>Service</span>
+                    <span>{{ type|title }}</span>
+                </div>
+                
+                <div class="summary-item" style="border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 15px; margin-bottom: 15px;">
+                    <span>Details</span>
+                    <span>{{ summary }}</span>
+                </div>
+                
+                <div class="summary-item">
+                    <span>Taxes & Fees</span>
+                    <span>Included</span>
+                </div>
 
-                        .payment-card.selected {
-                            border-color: #2c7a9e !important;
-                            background-color: #f0f7fa;
-                            box-shadow: 0 0 0 1px #2c7a9e;
-                        }
-
-                        .payment-card.selected .check-icon {
-                            opacity: 1 !important;
-                        }
-
-                        .cursor-pointer {
-                            cursor: pointer;
-                        }
-
-                        .logo-box {
-                            width: 50px;
-                            display: flex;
-                            justify-content: center;
-                        }
-                    </style>
-
-                    <script>
-                        const methodSelect = document.getElementById('id_payment_method');
-                        const continueBtn = document.getElementById('btn-continue');
-                        const stepSelect = document.getElementById('step-select-method');
-                        const stepDetails = document.getElementById('step-payment-details');
-                        const mobileFields = document.getElementById('mobile-banking-fields');
-                        const cardFields = document.getElementById('card-fields');
-                        const selectedMethodName = document.getElementById('selected-method-name');
-
-                        // Inputs
-                        const mobileInput = document.getElementById('id_mobile_number');
-                        const transactionInput = document.getElementById('id_transaction_id');
-
-                        function selectMethod(method, element) {
-                            // Update hidden select
-                            methodSelect.value = method;
-
-                            // Visual update
-                            document.querySelectorAll('.payment-card').forEach(el => el.classList.remove('selected'));
-                            element.classList.add('selected');
-
-                            // Enable continue
-                            continueBtn.disabled = false;
-                        }
-
-                        function goToDetails() {
-                            const method = methodSelect.value;
-                            if (!method) return;
-
-                            stepSelect.style.display = 'none';
-                            stepDetails.style.display = 'block';
-
-                            selectedMethodName.textContent = method;
-
-                            if (method === 'BKASH' || method === 'NAGAD') {
-                                mobileFields.style.display = 'block';
-                                cardFields.style.display = 'none';
-                                mobileInput.required = true;
-                                transactionInput.required = true;
-                            } else {
-                                cardFields.style.display = 'block';
-                                mobileFields.style.display = 'none';
-                                mobileInput.required = false;
-                                transactionInput.required = false;
-                            }
-                        }
-
-                        function goBack() {
-                            stepDetails.style.display = 'none';
-                            stepSelect.style.display = 'block';
-                        }
-                    </script>
+                <div class="summary-total">
+                    <span class="fs-5 fw-bold">Total Due</span>
+                    <h3>BDT {{ price }}</h3>
+                </div>
+                
+                <div class="mt-4 text-center">
+                    <small class="text-white-50"><i class="fas fa-shield-check me-1"></i> Safe & Secure Booking</small>
                 </div>
             </div>
         </div>

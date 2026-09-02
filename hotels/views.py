@@ -1,7 +1,17 @@
+# ==========================================
+# HOTELS APP VIEWS
+# ==========================================
+# This file contains the logic for finding and filtering hotel accommodations.
+# Features included: Hotel Search Engine.
+
 from django.shortcuts import render
 from django.db.models import Q
 from .models import Hotel
 
+# ---------------------------------------------------------
+# 1. SEARCH HOTELS VIEW
+# ---------------------------------------------------------
+# Handles queries for hotels by city or name and filters results by price ranges.
 def search_hotels(request):
     query = request.GET.get('city') # Keeping param name 'city' for backward compatibility, but treating as general query
     

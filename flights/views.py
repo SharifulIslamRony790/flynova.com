@@ -1,8 +1,17 @@
+# ==========================================
+# FLIGHTS APP VIEWS
+# ==========================================
+# This file contains the logic for searching flights and displaying airport info.
+# Features included: Flight Search Engine and Real-time Airport Arrivals.
+
 from django.shortcuts import render
 from .models import Flight, Airport
-
 from django.db.models import Q
 
+# ---------------------------------------------------------
+# 1. SEARCH FLIGHTS VIEW
+# ---------------------------------------------------------
+# Handles the flight search query, filtering, sorting, and price calculation.
 def search_flights(request):
     origin_code = request.GET.get('origin')
     destination_code = request.GET.get('destination')
@@ -72,6 +81,10 @@ def search_flights(request):
     }
     return render(request, 'flights/search_results.html', context)
 
+# ---------------------------------------------------------
+# 2. AIRPORT INFO VIEW
+# ---------------------------------------------------------
+# Displays real-time airport information with arriving flights for the next 24 hours.
 def airport_info(request):
     """Display real-time airport information with arriving flights"""
     from django.utils import timezone

@@ -1,0 +1,224 @@
+{% extends 'base.html' %}
+
+{% block title %}Customer Dashboard - FlyNova{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background-color: #f7f9fc;
+    }
+
+    .dashboard-sidebar {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+        padding: 20px 0;
+    }
+
+    .sidebar-link {
+        display: block;
+        padding: 12px 24px;
+        color: #4a5568;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        border-left: 3px solid transparent;
+    }
+
+    .sidebar-link:hover,
+    .sidebar-link.active {
+        background-color: #f0f7fb;
+        color: #2c7a9e;
+        border-left: 3px solid #2c7a9e;
+    }
+
+    .sidebar-link i {
+        width: 24px;
+    }
+
+    .stat-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+        transition: transform 0.2s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .stat-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+    }
+
+    .content-card {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-lg-3 mb-4">
+            <div class="dashboard-sidebar">
+                <div class="text-center mb-4 px-4">
+                    {% if profile.profile_picture %}
+                    <img src="{{ profile.profile_picture.url }}" alt="Profile Picture"
+                        class="rounded-circle shadow-sm mb-3" style="width: 100px; height: 100px; object-fit: cover;">
+                    {% else %}
+                    <div class="rounded-circle shadow-sm d-inline-flex align-items-center justify-content-center bg-light text-secondary mb-3"
+                        style="width: 100px; height: 100px; font-size: 2.5rem;">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    {% endif %}
+                    <h5 class="fw-bold mb-0 text-dark">{{ profile.full_name|default:user.username }}</h5>
+                    <small class="text-muted">{{ user.email }}</small>
+                </div>
+                <div class="list-group list-group-flush border-0">
+                    <a href="{% url 'profile' %}" class="sidebar-link active"><i class="fas fa-user"></i> Profile</a>
+                    <a href="{% url 'my_bookings' %}" class="sidebar-link"><i class="fas fa-ticket-alt"></i> My
+                        Bookings</a>
+                    <a href="{% url 'edit_profile' %}" class="sidebar-link"><i class="fas fa-user-edit"></i> Edit
+                        Profile</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-lg-9">
+            <h3 class="fw-bold mb-4" style="color: #2d3748;">Overview</h3>
+
+            <!-- Stats Row -->
+            <div class="row mb-4">
+                <div class="col-md-6 mb-3">
+                    <div class="stat-card">
+                        <div class="d-flex align-items-center">
+                            <div class="stat-icon bg-primary bg-opacity-10 text-primary me-3">
+                                <i class="fas fa-plane-departure"></i>
+                            </div>
+                            <div>
+                                <h6 class="text-muted mb-1">Total Bookings</h6>
+                                <h3 class="fw-bold mb-0 text-dark">{{ total_bookings }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="stat-card">
+                        <div class="d-flex align-items-center">
+                            <div class="stat-icon bg-success bg-opacity-10 text-success me-3">
+                                <i class="fas fa-wallet"></i>
+                            </div>
+                            <div>
+                                <h6 class="text-muted mb-1">Total Spent</h6>
+                                <h3 class="fw-bold mb-0 text-dark">BDT {{ total_spent|floatformat:0 }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Info Card -->
+            <div class="content-card p-4 mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="fw-bold text-dark mb-0">Personal Information</h5>
+                    <a href="{% url 'edit_profile' %}" class="btn btn-sm btn-outline-primary rounded-pill px-3">Edit</a>
+                </div>
+                <div class="row">
+                    <div class="col-sm-6 mb-3">
+                        <small class="text-muted d-block mb-1">Full Name</small>
+                        <span class="fw-semibold text-dark">{{ profile.full_name|default:"Not provided" }}</span>
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <small class="text-muted d-block mb-1">Phone Number</small>
+                        <span class="fw-semibold text-dark">{{ profile.phone_number|default:"Not provided" }}</span>
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <small class="text-muted d-block mb-1">Date of Birth</small>
+                        <span class="fw-semibold text-dark">{{ profile.date_of_birth|default:"Not provided" }}</span>
+                    </div>
+                    <div class="col-sm-6 mb-3">
+                        <small class="text-muted d-block mb-1">Address</small>
+                        <span class="fw-semibold text-dark">{{ profile.address|default:"Not provided" }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Bookings -->
+            <div class="content-card p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="fw-bold text-dark mb-0">Recent Bookings</h5>
+                    <a href="{% url 'my_bookings' %}" class="btn btn-sm btn-link text-decoration-none">View All</a>
+                </div>
+
+                {% if recent_bookings %}
+                <div class="table-responsive">
+                    <table class="table table-borderless align-middle mb-0">
+                        <thead class="text-muted border-bottom">
+                            <tr>
+                                <th class="fw-medium pb-2">Service</th>
+                                <th class="fw-medium pb-2">Date</th>
+                                <th class="fw-medium pb-2">Status</th>
+                                <th class="fw-medium pb-2 text-end">Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for booking in recent_bookings %}
+                            <tr class="border-bottom">
+                                <td class="py-3">
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-light rounded p-2 me-3 text-secondary">
+                                            {% if booking.flight %}<i class="fas fa-plane"></i>
+                                            {% elif booking.room %}<i class="fas fa-hotel"></i>
+                                            {% else %}<i class="fas fa-map-marked-alt"></i>{% endif %}
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0 text-dark fw-semibold">{{ booking.get_service|truncatechars:30 }}</h6>
+                                            <small class="text-muted">#{{ booking.id }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-3 text-muted">{{ booking.booking_date|date:"M d, Y" }}</td>
+                                <td class="py-3">
+                                    {% if booking.status == 'CONFIRMED' %}
+                                    <span
+                                        class="badge bg-success bg-opacity-10 text-success rounded-pill px-3">Confirmed</span>
+                                    {% elif booking.status == 'PENDING' %}
+                                    <span
+                                        class="badge bg-warning bg-opacity-10 text-warning rounded-pill px-3">Pending</span>
+                                    {% else %}
+                                    <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-3">{{
+                                        booking.status }}</span>
+                                    {% endif %}
+                                </td>
+                                <td class="py-3 text-end fw-semibold text-dark">BDT {{ booking.total_price|floatformat:0 }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-4 text-muted">
+                    <i class="fas fa-receipt fa-3x mb-3 text-light"></i>
+                    <p class="mb-0">You have no recent bookings.</p>
+                    <a href="{% url 'home' %}" class="btn btn-sm btn-outline-primary rounded-pill mt-3 px-4">Book
+                        Now</a>
+                </div>
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

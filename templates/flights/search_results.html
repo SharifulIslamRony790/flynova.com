@@ -2,130 +2,382 @@
 
 {% block title %}Flight Results - FlyNova{% endblock %}
 
-{% block content %}
-<div class="container my-5">
-    <h2 class="mb-4">Flight Search Results</h2>
+{% block extra_css %}
+<style>
+    body {
+        background-color: #f0f2f5;
+        font-family: 'Inter', sans-serif;
+    }
 
-    <div class="card mb-4 p-3 bg-light">
-        <form action="{% url 'search_flights' %}" method="GET" class="row g-3">
+    /* Top Search Bar */
+    .top-search-bar {
+        background: #003580; /* A premium dark blue */
+        padding: 20px 0;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .top-search-bar .form-control {
+        border: none;
+        border-radius: 8px;
+        padding: 12px 15px;
+        font-weight: 500;
+    }
+
+    .top-search-bar .btn-update {
+        background: #0071c2;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 12px;
+        font-weight: 600;
+        width: 100%;
+        transition: background 0.3s;
+    }
+    .top-search-bar .btn-update:hover {
+        background: #005999;
+    }
+
+    /* Filters Section */
+    .filter-card {
+        background: white;
+        border-radius: 12px;
+        border: none;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    .price-filters {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .price-pills {
+        border-radius: 20px;
+        padding: 8px 20px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: all 0.2s;
+        border: 1px solid #dee2e6;
+        color: #495057;
+        text-decoration: none;
+    }
+
+    .price-pills:hover {
+        background-color: #f8f9fa;
+        color: #212529;
+    }
+
+    .price-pills.active-all { background: #e8f0fe; color: #1a73e8; border-color: #1a73e8; }
+    .price-pills.active-low { background: #e6f4ea; color: #137333; border-color: #137333; }
+    .price-pills.active-mid { background: #fef7e0; color: #b06000; border-color: #b06000; }
+    .price-pills.active-high { background: #fce8e6; color: #c5221f; border-color: #c5221f; }
+
+    /* Flight Cards */
+    .flight-card {
+        background: white;
+        border-radius: 12px;
+        border: none;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        transition: transform 0.2s, box-shadow 0.2s;
+        overflow: hidden;
+        margin-bottom: 20px;
+    }
+
+    .flight-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    }
+
+    .flight-details-sec {
+        padding: 25px;
+    }
+
+    .flight-price-sec {
+        background: #f8f9fa;
+        padding: 25px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        border-left: 1px solid #ebebeb;
+        height: 100%;
+    }
+
+    .airline-logo {
+        width: 40px;
+        height: 40px;
+        object-fit: contain;
+        margin-right: 15px;
+    }
+    
+    .airline-name {
+        font-weight: 700;
+        color: #212529;
+        font-size: 1.1rem;
+        margin: 0;
+    }
+
+    .flight-time {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #212529;
+        margin-bottom: 0;
+    }
+
+    .city-code {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #495057;
+    }
+
+    .city-name {
+        font-size: 0.85rem;
+        color: #6c757d;
+    }
+
+    /* Timeline */
+    .timeline-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        padding: 0 20px;
+    }
+
+    .duration-text {
+        font-size: 0.85rem;
+        color: #6c757d;
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+
+    .timeline-line {
+        width: 100%;
+        height: 2px;
+        background-color: #adb5bd;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .timeline-line::before, .timeline-line::after {
+        content: '';
+        position: absolute;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        border: 2px solid #adb5bd;
+        background: white;
+    }
+
+    .timeline-line::before { left: -4px; }
+    .timeline-line::after { right: -4px; }
+
+    .timeline-icon {
+        background: white;
+        padding: 0 10px;
+        color: #adb5bd;
+        font-size: 1rem;
+        transform: rotate(45deg);
+    }
+
+    .flight-type {
+        font-size: 0.8rem;
+        color: #198754;
+        font-weight: 600;
+        margin-top: 5px;
+    }
+
+    /* Price Section */
+    .total-price {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: #0071c2;
+        margin-bottom: 0;
+    }
+
+    .price-subtitle {
+        font-size: 0.85rem;
+        color: #6c757d;
+    }
+
+    .btn-select-flight {
+        background: #0071c2;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 30px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        width: 100%;
+        margin-top: 15px;
+        transition: background 0.3s;
+    }
+
+    .btn-select-flight:hover {
+        background: #005999;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Top Search Bar -->
+<div class="top-search-bar">
+    <div class="container">
+        <form action="{% url 'search_flights' %}" method="GET" class="row g-2 align-items-center">
             <div class="col-md-3">
-                <input type="text" name="origin" class="form-control" placeholder="From"
-                    value="{{ origin_query|default:'' }}">
+                <input type="text" name="origin" class="form-control" placeholder="From (e.g. DAC)" value="{{ origin_query|default:'' }}">
             </div>
             <div class="col-md-3">
-                <input type="text" name="destination" class="form-control" placeholder="To"
-                    value="{{ destination_query|default:'' }}">
+                <input type="text" name="destination" class="form-control" placeholder="To (e.g. JFK)" value="{{ destination_query|default:'' }}">
             </div>
             <div class="col-md-2">
                 <input type="date" name="date" class="form-control" value="{{ date_query|default:'' }}">
             </div>
             <div class="col-md-2">
-                <input type="number" name="passengers" class="form-control" placeholder="Passengers" min="1"
-                    value="{{ passengers|default:'1' }}">
+                <input type="number" name="passengers" class="form-control" placeholder="Passengers" min="1" value="{{ passengers|default:'1' }}">
             </div>
-            <div class="col-md-2 d-grid">
-                <button type="submit" class="btn btn-primary">Update Search</button>
+            <div class="col-md-2">
+                <button type="submit" class="btn-update">Search Again</button>
             </div>
         </form>
     </div>
+</div>
 
-    {% if flights %}
-    <!-- Price Filter Buttons -->
-    <div class="card mb-3 p-3">
-        <h6 class="mb-3"><strong>Filter by Price:</strong></h6>
-        <div class="btn-group" role="group">
-            <a href="?origin={{ origin_query|default:'' }}&destination={{ destination_query|default:'' }}&date={{ date_query|default:'' }}&passengers={{ passengers }}&price_filter=all"
-                class="btn {% if price_filter == 'all' %}btn-primary{% else %}btn-outline-primary{% endif %}">
-                All Prices
-            </a>
-            <a href="?origin={{ origin_query|default:'' }}&destination={{ destination_query|default:'' }}&date={{ date_query|default:'' }}&passengers={{ passengers }}&price_filter=low"
-                class="btn {% if price_filter == 'low' %}btn-success{% else %}btn-outline-success{% endif %}">
-                💰 Low
-            </a>
-            <a href="?origin={{ origin_query|default:'' }}&destination={{ destination_query|default:'' }}&date={{ date_query|default:'' }}&passengers={{ passengers }}&price_filter=mid"
-                class="btn {% if price_filter == 'mid' %}btn-warning{% else %}btn-outline-warning{% endif %}">
-                💰💰 Mid
-            </a>
-            <a href="?origin={{ origin_query|default:'' }}&destination={{ destination_query|default:'' }}&date={{ date_query|default:'' }}&passengers={{ passengers }}&price_filter=high"
-                class="btn {% if price_filter == 'high' %}btn-danger{% else %}btn-outline-danger{% endif %}">
-                💰💰💰 High
-            </a>
-        </div>
-        {% if price_filter != 'all' %}
-        <small class="text-muted mt-2 d-block">
-            Showing {{ price_filter }} price flights
-            {% if price_categories.low %}
-            (Low: up to BDT {{ price_categories.low|floatformat:0 }},
-            Mid: BDT {{ price_categories.low|floatformat:0 }} - {{ price_categories.mid|floatformat:0 }},
-            High: above BDT {{ price_categories.mid|floatformat:0 }})
-            {% endif %}
-        </small>
-        {% endif %}
-    </div>
-
-    <div class="alert alert-info mb-3">
-        <strong>Showing prices for {{ passengers }} passenger{{ passengers|pluralize }}</strong>
-    </div>
+<div class="container">
     <div class="row">
-        {% for flight in flights %}
-        <div class="col-12 mb-3">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <div class="row align-items-center">
-                        <div class="col-md-2 text-center">
-                            {% if flight.airline.logo %}
-                            <img src="{{ flight.airline.logo.url }}" alt="{{ flight.airline.name }}" class="img-fluid"
-                                style="max-height: 50px;">
-                            {% else %}
-                            <h5 class="text-primary">{{ flight.airline.name }}</h5>
-                            {% endif %}
-                            <small class="text-muted">{{ flight.flight_number }}</small>
-                        </div>
-                        <div class="col-md-2 text-center">
-                            <div class="mb-1">
-                                <strong class="text-primary">{{ flight.departure_time|date:"d M, Y" }}</strong>
+        <!-- Sidebar Filters -->
+        <div class="col-lg-3">
+            <div class="filter-card">
+                <h5 class="mb-4 fw-bold">Filters</h5>
+                
+                <h6 class="mb-3 fw-bold text-muted">Price Range</h6>
+                <div class="d-flex flex-column gap-2">
+                    <a href="?origin={{ origin_query|default:'' }}&destination={{ destination_query|default:'' }}&date={{ date_query|default:'' }}&passengers={{ passengers }}&price_filter=all"
+                        class="price-pills text-center {% if price_filter == 'all' %}active-all{% endif %}">
+                        All Prices
+                    </a>
+                    <a href="?origin={{ origin_query|default:'' }}&destination={{ destination_query|default:'' }}&date={{ date_query|default:'' }}&passengers={{ passengers }}&price_filter=low"
+                        class="price-pills text-center {% if price_filter == 'low' %}active-low{% endif %}">
+                        💰 Budget (Low)
+                    </a>
+                    <a href="?origin={{ origin_query|default:'' }}&destination={{ destination_query|default:'' }}&date={{ date_query|default:'' }}&passengers={{ passengers }}&price_filter=mid"
+                        class="price-pills text-center {% if price_filter == 'mid' %}active-mid{% endif %}">
+                        💰💰 Standard (Mid)
+                    </a>
+                    <a href="?origin={{ origin_query|default:'' }}&destination={{ destination_query|default:'' }}&date={{ date_query|default:'' }}&passengers={{ passengers }}&price_filter=high"
+                        class="price-pills text-center {% if price_filter == 'high' %}active-high{% endif %}">
+                        💰💰💰 Premium (High)
+                    </a>
+                </div>
+
+                {% if price_filter != 'all' %}
+                <div class="mt-3 p-3 bg-light rounded text-muted small">
+                    Showing <strong>{{ price_filter }}</strong> flights
+                    {% if price_categories.low %}
+                    <ul class="mb-0 mt-1 ps-3">
+                        <li>Low: &lt; BDT {{ price_categories.low|floatformat:0 }}</li>
+                        <li>Mid: BDT {{ price_categories.low|floatformat:0 }} - {{ price_categories.mid|floatformat:0 }}</li>
+                        <li>High: &gt; BDT {{ price_categories.mid|floatformat:0 }}</li>
+                    </ul>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Flight Results -->
+        <div class="col-lg-9">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="fw-bold m-0">Showing {{ flights|length }} flights found</h4>
+                <div class="bg-white px-3 py-2 rounded shadow-sm text-primary fw-bold">
+                    <i class="fas fa-users me-2"></i> {{ passengers }} Passenger{{ passengers|pluralize }}
+                </div>
+            </div>
+
+            {% if flights %}
+                {% for flight in flights %}
+                <div class="flight-card">
+                    <div class="row g-0">
+                        <!-- Flight Details -->
+                        <div class="col-md-9 flight-details-sec">
+                            <div class="d-flex align-items-center mb-4">
+                                {% if flight.airline.logo %}
+                                <img src="{{ flight.airline.logo.url }}" alt="{{ flight.airline.name }}" class="airline-logo">
+                                {% else %}
+                                <div class="airline-logo bg-light rounded d-flex align-items-center justify-content-center text-primary fw-bold border">
+                                    <i class="fas fa-plane"></i>
+                                </div>
+                                {% endif %}
+                                <div>
+                                    <h3 class="airline-name">{{ flight.airline.name }}</h3>
+                                    <small class="text-muted">Flight {{ flight.flight_number }}</small>
+                                </div>
                             </div>
-                            <h4>{{ flight.departure_time|date:"H:i" }}</h4>
-                            <p class="mb-0"><strong>{{ flight.origin.code }}</strong></p>
-                            <small class="text-muted">{{ flight.origin.city }}</small>
-                        </div>
-                        <div class="col-md-2 text-center">
-                            <div class="text-muted mb-1"><i class="fas fa-plane"></i></div>
-                            <small class="text-muted d-block">Duration</small>
-                            <strong>1h 30m</strong>
-                            <small class="d-block text-success">Non-stop</small>
-                        </div>
-                        <div class="col-md-2 text-center">
-                            <div class="mb-1">
-                                <strong class="text-primary">{{ flight.arrival_time|date:"d M, Y" }}</strong>
+
+                            <div class="row align-items-center">
+                                <!-- Origin -->
+                                <div class="col-4 text-end">
+                                    <p class="flight-time">{{ flight.departure_time|date:"H:i" }}</p>
+                                    <div class="city-code">{{ flight.origin.code }}</div>
+                                    <div class="city-name">{{ flight.origin.city }}</div>
+                                    <small class="text-muted">{{ flight.departure_time|date:"d M, Y" }}</small>
+                                </div>
+
+                                <!-- Timeline -->
+                                <div class="col-4 timeline-container">
+                                    <div class="duration-text">1h 30m</div>
+                                    <div class="timeline-line">
+                                        <i class="fas fa-plane timeline-icon"></i>
+                                    </div>
+                                    <div class="flight-type">Direct</div>
+                                </div>
+
+                                <!-- Destination -->
+                                <div class="col-4 text-start">
+                                    <p class="flight-time">{{ flight.arrival_time|date:"H:i" }}</p>
+                                    <div class="city-code">{{ flight.destination.code }}</div>
+                                    <div class="city-name">{{ flight.destination.city }}</div>
+                                    <small class="text-muted">{{ flight.arrival_time|date:"d M, Y" }}</small>
+                                </div>
                             </div>
-                            <h4>{{ flight.arrival_time|date:"H:i" }}</h4>
-                            <p class="mb-0"><strong>{{ flight.destination.code }}</strong></p>
-                            <small class="text-muted">{{ flight.destination.city }}</small>
                         </div>
-                        <div class="col-md-4 text-end">
-                            {% if flight.num_passengers > 1 %}
-                            <h3 class="text-primary mb-0">BDT {{ flight.total_price|floatformat:0 }}</h3>
-                            <p class="text-muted small mb-0">Total for {{ flight.num_passengers }} passengers</p>
-                            <small class="text-muted">(BDT {{ flight.price|floatformat:0 }} per person)</small>
-                            {% else %}
-                            <h3 class="text-primary mb-0">BDT {{ flight.price|floatformat:0 }}</h3>
-                            <p class="text-muted small">per person</p>
-                            {% endif %}
-                            <a href="{% url 'create_booking' 'flight' flight.id %}" class="btn btn-primary mt-2">Select
-                                Flight</a>
+
+                        <!-- Price & Action -->
+                        <div class="col-md-3">
+                            <div class="flight-price-sec">
+                                {% if flight.num_passengers > 1 %}
+                                    <div class="text-center w-100">
+                                        <h2 class="total-price">BDT {{ flight.total_price|floatformat:0 }}</h2>
+                                        <div class="price-subtitle">Total for {{ flight.num_passengers }} travelers</div>
+                                        <div class="text-muted small mt-1">BDT {{ flight.price|floatformat:0 }} per person</div>
+                                    </div>
+                                {% else %}
+                                    <div class="text-center w-100">
+                                        <h2 class="total-price">BDT {{ flight.price|floatformat:0 }}</h2>
+                                        <div class="price-subtitle">Total price for 1 adult</div>
+                                    </div>
+                                {% endif %}
+                                
+                                <a href="{% url 'create_booking' 'flight' flight.id %}" class="btn btn-select-flight">Select <i class="fas fa-chevron-right ms-1"></i></a>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+                {% endfor %}
+            {% else %}
+                <div class="text-center py-5 bg-white rounded shadow-sm">
+                    <i class="fas fa-search-minus fa-4x text-muted mb-3"></i>
+                    <h4 class="fw-bold">No flights found</h4>
+                    <p class="text-muted">We couldn't find any flights matching your criteria. Try adjusting your dates or locations.</p>
+                </div>
+            {% endif %}
         </div>
-        {% endfor %}
     </div>
-    {% else %}
-    <div class="alert alert-info text-center">
-        <h4>No flights found.</h4>
-        <p>Try changing your search criteria.</p>
-    </div>
-    {% endif %}
 </div>
 {% endblock %}

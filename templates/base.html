@@ -14,122 +14,232 @@
             background-color: #f8f9fa;
         }
 
+        /* Navbar Base (Transparent for Homepage) */
         .navbar {
-            background-color: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
-            padding: 15px 0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 25px 0;
+            background: transparent;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1030;
+        }
+
+        /* Scrolled or Non-Homepage Navbar (Glassmorphic) */
+        .navbar.scrolled, body:not(.home-page) .navbar {
+            background-color: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.08);
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        /* Add top padding for pages without hero section so content isn't hidden */
+        body:not(.home-page) {
+            padding-top: 76px;
         }
 
         .navbar-brand {
-            font-weight: 700;
-            color: #2c7a9e !important;
-            font-size: 1.3rem;
+            font-weight: 800;
+            color: #ffffff !important;
+            font-size: 1.5rem;
             display: flex;
             align-items: center;
             gap: 8px;
+            transition: color 0.4s;
+        }
+
+        .navbar.scrolled .navbar-brand, body:not(.home-page) .navbar-brand {
+            color: #0d2b4d !important;
         }
 
         .navbar-brand i {
-            font-size: 1.5rem;
+            font-size: 1.6rem;
+            color: #3da5d9;
         }
 
         .nav-link {
             font-weight: 500;
-            color: #555 !important;
+            color: rgba(255, 255, 255, 0.9) !important;
             margin: 0 15px;
             transition: all 0.3s;
             font-size: 0.95rem;
             position: relative;
         }
 
-        /* Removed hover color change as requested */
-        /* .nav-link:hover { color: #2c7a9e !important; } */
+        .navbar.scrolled .nav-link, body:not(.home-page) .nav-link {
+            color: #4a5568 !important;
+        }
 
-        .nav-link::after {
+        .navbar.scrolled .nav-link:hover, body:not(.home-page) .nav-link:hover {
+            color: #2c7a9e !important;
+        }
+
+        .nav-link:not(.dropdown-toggle)::after {
             content: '';
             position: absolute;
             bottom: -5px;
             left: 0;
             width: 0;
             height: 2px;
-            background: #2c7a9e;
+            background: #3da5d9;
             transition: width 0.3s;
         }
 
         /* Active state underline */
-        .nav-link.active::after {
+        .nav-link:not(.dropdown-toggle):hover::after, .nav-link:not(.dropdown-toggle).active::after {
             width: 100%;
+        }
+
+        /* Dropdown styling */
+        .dropdown-menu {
+            border: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            padding: 10px 0;
+            margin-top: 10px;
+        }
+        .dropdown-item {
+            padding: 8px 20px;
+            font-weight: 500;
+            color: #4a5568;
+            transition: all 0.2s;
+        }
+        .dropdown-item:hover {
+            background-color: #f0f7fb;
+            color: #2c7a9e;
+        }
+        .dropdown-item i {
+            width: 20px;
+            margin-right: 5px;
+            text-align: center;
         }
 
         .btn-signup {
             background: linear-gradient(135deg, #2c7a9e 0%, #3da5d9 100%);
             color: white !important;
-            padding: 8px 25px;
-            border-radius: 25px;
+            padding: 8px 24px;
+            border-radius: 8px;
             font-weight: 600;
-            transition: all 0.3s;
+            font-size: 0.95rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             border: none;
+            box-shadow: 0 4px 10px rgba(44, 122, 158, 0.2);
+            display: inline-block;
+            text-decoration: none;
         }
 
         .btn-signup:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(44, 122, 158, 0.3);
+            box-shadow: 0 6px 15px rgba(44, 122, 158, 0.4);
+            background: linear-gradient(135deg, #215c77 0%, #2c7a9e 100%);
         }
 
         .footer {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            color: white;
-            padding: 50px 0 20px 0;
-            margin-top: 50px;
+            margin-top: 60px;
         }
 
-        .footer h5 {
-            color: #ffffff;
+        /* Footer Top Layer */
+        .footer-top {
+            background: linear-gradient(135deg, #2c7a9e 0%, #3da5d9 100%);
+            padding: 40px 0;
+            color: white;
+            border-radius: 16px 16px 0 0;
+        }
+
+        .footer-top .btn-outline-light {
+            border-width: 2px;
+            font-weight: 600;
+            border-radius: 25px;
+            padding: 10px 30px;
+            transition: all 0.3s;
+        }
+        
+        .footer-top .btn-outline-light:hover {
+            color: #2c7a9e;
+            background-color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        /* Footer Middle Layer */
+        .footer-main {
+            background-color: #0d2b4d;
+            color: #d1d5db;
+            padding: 70px 0 40px;
+        }
+
+        .footer-main h5 {
+            color: white;
             font-weight: 700;
             margin-bottom: 25px;
+            letter-spacing: 0.5px;
         }
 
-        .footer p,
-        .footer a {
-            color: #d0d0d0;
+        .footer-main p {
+            line-height: 1.7;
         }
 
-        .footer a {
-            transition: color 0.3s;
+        .footer-links li {
+            margin-bottom: 12px;
         }
 
-        .footer a:hover {
-            color: #3da5d9 !important;
+        .footer-links a {
+            color: #d1d5db;
+            text-decoration: none;
+            transition: all 0.3s;
+            display: inline-block;
         }
 
-        .footer .social-links a {
-            width: 40px;
-            height: 40px;
+        .footer-links a:hover {
+            color: #3da5d9;
+            transform: translateX(5px);
+        }
+
+        .footer-main .social-links a {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            border: 2px solid #3da5d9;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
             border-radius: 50%;
-            color: #3da5d9;
-            margin: 0 5px;
+            margin-right: 10px;
             transition: all 0.3s;
         }
 
-        .footer .social-links a:hover {
+        .footer-main .social-links a:hover {
             background: #3da5d9;
-            color: white;
             transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(61, 165, 217, 0.4);
+        }
+
+        /* Footer Bottom Layer */
+        .footer-bottom {
+            background-color: #081b33;
+            padding: 25px 0;
+            font-size: 0.9rem;
+            color: #9ca3af;
         }
 
         .payment-logo {
             background: white;
-            padding: 6px 10px;
+            padding: 5px 10px;
             border-radius: 4px;
-            height: 40px;
+            height: 35px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
+            margin-left: 8px;
+        }
+
+        .payment-logo img {
+            height: 20px;
+            width: auto;
+            max-width: 50px;
+            object-fit: contain;
         }
 
         .payment-logo img {
@@ -142,8 +252,8 @@
     {% block extra_css %}{% endblock %}
 </head>
 
-<body>
-    <nav class="navbar navbar-expand-lg navbar-light sticky-top">
+<body class="{% block body_class %}{% endblock %}">
+    <nav class="navbar navbar-expand-lg navbar-dark" id="mainNavbar">
         <div class="container">
             <a class="navbar-brand" href="{% url 'home' %}"><i class="fas fa-plane-departure"></i> FlyNova</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -168,22 +278,21 @@
                             class="nav-link {% if request.resolver_match.url_name == 'airport_info' %}active{% endif %}"
                             href="{% url 'airport_info' %}"><i class="fas fa-plane-arrival"></i> Airport Info</a></li>
                 </ul>
-                <ul class="navbar-nav">
+                <ul class="navbar-nav align-items-center">
                     {% if user.is_authenticated %}
-                    <li class="nav-item"><a
-                            class="nav-link {% if request.resolver_match.url_name == 'my_bookings' %}active{% endif %}"
-                            href="{% url 'my_bookings' %}"><i class="fas fa-ticket-alt"></i> My Bookings</a></li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"><i
                                 class="fas fa-user-circle"></i> {{ user.username }}</a>
                         <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'profile' %}"><i class="fas fa-user"></i> Profile</a></li>
+                            <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i>
                                     Logout</a></li>
                         </ul>
                     </li>
                     {% else %}
-                    <li class="nav-item me-2"><a class="nav-link" href="{% url 'login' %}">Sign-In</a></li>
-                    <li class="nav-item"><a class="btn btn-signup" href="{% url 'signup' %}">Sign-Up</a></li>
+                    <li class="nav-item me-3"><a class="nav-link px-0" href="{% url 'login' %}">Log In</a></li>
+                    <li class="nav-item"><a class="btn btn-signup" href="{% url 'signup' %}">Sign Up</a></li>
                     {% endif %}
                 </ul>
             </div>
@@ -206,70 +315,79 @@
 
     <footer class="footer">
         <div class="container">
-            <div class="row">
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <h5 class="text-uppercase">About FlyNova</h5>
-                    <p>FlyNova is your trusted travel partner, offering the best deals on flights, hotels, and holiday
-                        packages across Bangladesh. We make your travel dreams a reality.</p>
-                    <div class="social-links mt-4">
-                        <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-                        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
-                        <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+            <!-- Top Layer -->
+            <div class="footer-top px-4 px-md-5">
+                <div class="row align-items-center">
+                    <div class="col-md-8 text-center text-md-start mb-3 mb-md-0">
+                        <h3 class="fw-bold mb-1">Ready to explore the world?</h3>
+                        <p class="mb-0 fs-5 text-white-50">Book your next adventure with FlyNova today.</p>
                     </div>
-                </div>
-                <div class="col-lg-2 col-md-6 mb-4">
-                    <h5 class="text-uppercase">Quick Links</h5>
-                    <ul class="list-unstyled">
-                        <li class="mb-2"><a href="{% url 'home' %}" class="text-decoration-none">Home</a></li>
-                        <li class="mb-2"><a href="{% url 'search_flights' %}" class="text-decoration-none">Flights</a>
-                        </li>
-                        <li class="mb-2"><a href="{% url 'search_hotels' %}" class="text-decoration-none">Hotels</a>
-                        </li>
-                        <li class="mb-2"><a href="{% url 'search_packages' %}" class="text-decoration-none">Packages</a>
-                        </li>
-                    </ul>
-                </div>
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <h5 class="text-uppercase">Support</h5>
-                    <ul class="list-unstyled">
-                        <li class="mb-2"><a href="#" class="text-decoration-none">Contact Us</a></li>
-                        <li class="mb-2"><a href="#" class="text-decoration-none">FAQ</a></li>
-                        <li class="mb-2"><a href="#" class="text-decoration-none">Terms of Service</a></li>
-                        <li class="mb-2"><a href="#" class="text-decoration-none">Privacy Policy</a></li>
-                    </ul>
-                </div>
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <h5 class="text-uppercase">We Accept</h5>
-                    <p class="mb-3">Secure payment methods</p>
-                    <div class="d-flex align-items-center flex-wrap gap-2">
-                        <div class="payment-logo"><img
-                                src="https://upload.wikimedia.org/wikipedia/commons/4/41/Visa_Logo.png" alt="Visa">
-                        </div>
-                        <div class="payment-logo"><img
-                                src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg"
-                                alt="Mastercard"></div>
-                        <div class="payment-logo"><img
-                                src="https://seeklogo.com/images/B/bkash-logo-835789094A-seeklogo.com.png" alt="bKash">
-                        </div>
-                        <div class="payment-logo"><img
-                                src="https://seeklogo.com/images/N/nagad-logo-7A70CCFEE0-seeklogo.com.png" alt="Nagad">
-                        </div>
-                        <div class="payment-logo"><img
-                                src="https://seeklogo.com/images/D/dutch-bangla-bank-logo-4DD7819DE7-seeklogo.com.png"
-                                alt="DBBL"></div>
+                    <div class="col-md-4 text-center text-md-end">
+                        <a href="{% url 'search_flights' %}" class="btn btn-outline-light btn-lg">Book Now <i class="fas fa-arrow-right ms-2"></i></a>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="text-center p-3 mt-4"
-            style="background-color: rgba(0, 0, 0, 0.3); border-top: 1px solid rgba(255,255,255,0.1);">
+
+        <!-- Middle Layer -->
+        <div class="footer-main">
             <div class="container">
                 <div class="row">
-                    <div class="col-md-6 text-md-start" style="color: #d0d0d0;">&copy; 2024 FlyNova. All Rights
-                        Reserved.</div>
-                    <div class="col-md-6 text-md-end" style="color: #d0d0d0;">Designed with <i
-                            class="fas fa-heart text-danger"></i> for Travelers</div>
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <h5 class="text-uppercase"><i class="fas fa-plane-departure text-info me-2"></i> FlyNova</h5>
+                        <p class="mt-3">FlyNova is your trusted travel partner, offering the best deals on flights, hotels, and holiday packages across Bangladesh. We make your travel dreams a reality.</p>
+                        <div class="social-links mt-4">
+                            <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                            <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                            <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                            <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-6 mb-4">
+                        <h5 class="text-uppercase">Explore</h5>
+                        <ul class="list-unstyled footer-links mt-3">
+                            <li><a href="{% url 'home' %}">Home</a></li>
+                            <li><a href="{% url 'search_flights' %}">Flights</a></li>
+                            <li><a href="{% url 'search_hotels' %}">Hotels</a></li>
+                            <li><a href="{% url 'search_packages' %}">Packages</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-4">
+                        <h5 class="text-uppercase">Support</h5>
+                        <ul class="list-unstyled footer-links mt-3">
+                            <li><a href="#">Contact Us</a></li>
+                            <li><a href="#">Help Center / FAQ</a></li>
+                            <li><a href="#">Terms of Service</a></li>
+                            <li><a href="#">Privacy Policy</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-4">
+                        <h5 class="text-uppercase">Newsletter</h5>
+                        <p class="mt-3">Subscribe to get the latest offers and updates.</p>
+                        <div class="input-group mt-3">
+                            <input type="email" class="form-control bg-light border-0" placeholder="Email address" aria-label="Email address">
+                            <button class="btn btn-info text-white" type="button"><i class="fas fa-paper-plane"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Layer -->
+        <div class="footer-bottom">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                        &copy; {% now "Y" %} FlyNova. All rights reserved. <br class="d-md-none">
+                        Built with <i class="fas fa-heart text-danger"></i> for Travelers.
+                    </div>
+                    <div class="col-md-6 text-center text-md-end d-flex justify-content-center justify-content-md-end align-items-center flex-wrap">
+                        <span class="me-2 d-none d-lg-inline">Secure Payments:</span>
+
+                        <div class="payment-logo"><img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard"></div>
+                        <div class="payment-logo"><img src="https://seeklogo.com/images/B/bkash-logo-835789094A-seeklogo.com.png" alt="bKash"></div>
+                        <div class="payment-logo"><img src="https://seeklogo.com/images/N/nagad-logo-7A70CCFEE0-seeklogo.com.png" alt="Nagad"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -277,6 +395,21 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     {% block extra_js %}{% endblock %}
+    <script>
+        // Navbar Scroll Effect
+        window.addEventListener('scroll', function() {
+            var navbar = document.getElementById('mainNavbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+                navbar.classList.remove('navbar-dark');
+                navbar.classList.add('navbar-light');
+            } else {
+                navbar.classList.remove('scrolled');
+                navbar.classList.add('navbar-dark');
+                navbar.classList.remove('navbar-light');
+            }
+        });
+    </script>
 </body>
 
 </html>

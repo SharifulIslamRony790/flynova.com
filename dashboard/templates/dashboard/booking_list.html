@@ -1,0 +1,176 @@
+{% extends 'dashboard/base_admin.html' %}
+
+{% block content %}
+<div class="premium-card">
+    <div class="p-4 border-bottom" style="border-color: #F8FAFC; background-color: #FAFAFA; border-radius: 16px 16px 0 0;">
+        <form method="GET" class="d-flex flex-wrap gap-3 align-items-center">
+            <div class="input-group flex-grow-1" style="max-width: 400px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border-radius: 8px;">
+                <span class="input-group-text bg-white border-end-0 text-muted" style="border-color: #E2E8F0; border-radius: 8px 0 0 8px;"><i class="fas fa-search"></i></span>
+                <input type="text" name="q" value="{{ current_q }}" class="form-control border-start-0 bg-white" placeholder="Search by ID or Email..." style="border-color: #E2E8F0; font-size: 0.95rem; border-radius: 0 8px 8px 0; padding: 10px 15px;">
+            </div>
+            
+            <div class="d-flex gap-2">
+                <select name="status" class="form-select bg-white" style="border-color: #E2E8F0; box-shadow: 0 1px 3px rgba(0,0,0,0.05); font-size: 0.95rem; font-weight: 500; border-radius: 8px; padding: 10px 35px 10px 15px; min-width: 160px;">
+                    <option value="">All Statuses</option>
+                    <option value="CONFIRMED" {% if current_status == 'CONFIRMED' %}selected{% endif %}>Confirmed</option>
+                    <option value="PENDING" {% if current_status == 'PENDING' %}selected{% endif %}>Pending</option>
+                    <option value="CANCELLED" {% if current_status == 'CANCELLED' %}selected{% endif %}>Cancelled</option>
+                </select>
+                <button type="submit" class="btn-premium" style="box-shadow: 0 1px 3px rgba(0,0,0,0.1); font-size: 0.95rem; border-radius: 8px; padding: 10px 20px;">
+                    <i class="fas fa-filter me-2"></i> Filter
+                </button>
+                {% if current_q or current_status %}
+                <a href="{% url 'dashboard:booking_list' %}" class="btn btn-light" style="border: 1px solid #E2E8F0; font-size: 0.95rem; border-radius: 8px; padding: 10px 20px;">
+                    Clear
+                </a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+    
+    <div id="table-container">
+        <div class="table-responsive">
+            <table class="table align-middle mb-0" style="border-collapse: separate; border-spacing: 0;">
+                <thead class="text-muted" style="font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 600;">
+                    <tr>
+                        <th scope="col" class="py-4 ps-4 border-bottom border-top-0" style="border-color: #F1F5F9;">Booking ID</th>
+                        <th scope="col" class="py-4 border-bottom border-top-0" style="border-color: #F1F5F9;">Customer</th>
+                        <th scope="col" class="py-4 border-bottom border-top-0" style="border-color: #F1F5F9;">Service</th>
+                        <th scope="col" class="py-4 border-bottom border-top-0" style="border-color: #F1F5F9;">Amount</th>
+                        <th scope="col" class="py-4 border-bottom border-top-0" style="border-color: #F1F5F9;">Date</th>
+                        <th scope="col" class="py-4 border-bottom border-top-0" style="border-color: #F1F5F9;">Status</th>
+                        <th scope="col" class="py-4 pe-4 border-bottom border-top-0 text-end" style="border-color: #F1F5F9;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for booking in bookings %}
+                    <tr class="table-row-hover">
+                        <td class="py-4 ps-4 fw-medium text-dark border-bottom" style="border-color: #F8FAFC; font-size: 0.95rem;">#{{ booking.id }}</td>
+                        <td class="py-4 border-bottom" style="border-color: #F8FAFC;">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 36px; height: 36px; font-size: 0.85rem; background-color: #EFF6FF; color: #2563EB;">
+                                    {{ booking.user.email|make_list|first|upper }}
+                                </div>
+                                <div>
+                                    <div class="fw-semibold text-dark" style="font-size: 0.95rem;">{{ booking.user.get_full_name|default:booking.user.username }}</div>
+                                    <div class="small" style="color: #94A3B8;">{{ booking.user.email }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="py-4 border-bottom" style="border-color: #F8FAFC;">
+                            {% if booking.flight %}
+                                <div class="fw-medium text-dark" style="font-size: 0.95rem;"><i class="fas fa-plane text-primary me-2 opacity-75"></i> Flight</div>
+                                <div class="small mt-1" style="color: #94A3B8;">{{ booking.flight.origin.code }} &rarr; {{ booking.flight.destination.code }}</div>
+                            {% elif booking.room %}
+                                <div class="fw-medium text-dark" style="font-size: 0.95rem;"><i class="fas fa-hotel text-info me-2 opacity-75"></i> Hotel Room</div>
+                                <div class="small mt-1" style="color: #94A3B8;">{{ booking.room.hotel.name }} &bull; {{ booking.room.get_room_type_display }}</div>
+                            {% elif booking.package %}
+                                <div class="fw-medium text-dark" style="font-size: 0.95rem;"><i class="fas fa-umbrella-beach text-success me-2 opacity-75"></i> Package</div>
+                                <div class="small mt-1" style="color: #94A3B8;">{{ booking.package.title }}</div>
+                            {% else %}
+                                <span class="text-muted"><i class="fas fa-box me-1 opacity-75"></i> Unknown</span>
+                            {% endif %}
+                        </td>
+                        <td class="py-4 fw-semibold text-dark border-bottom" style="border-color: #F8FAFC; font-size: 0.95rem;">BDT {{ booking.total_price }}</td>
+                        <td class="py-4 border-bottom" style="border-color: #F8FAFC; color: #64748B; font-size: 0.95rem;">{{ booking.booking_date|date:"d M Y" }}</td>
+                        <td class="py-4 border-bottom" style="border-color: #F8FAFC;">
+                            {% if booking.status == 'CONFIRMED' %}
+                                <span class="badge-premium badge-success"><i class="fas fa-circle me-1" style="font-size: 6px; vertical-align: middle;"></i> Confirmed</span>
+                            {% elif booking.status == 'PENDING' %}
+                                <span class="badge-premium badge-warning"><i class="fas fa-circle me-1" style="font-size: 6px; vertical-align: middle;"></i> Pending</span>
+                            {% elif booking.status == 'CANCELLED' %}
+                                <span class="badge-premium badge-danger"><i class="fas fa-circle me-1" style="font-size: 6px; vertical-align: middle;"></i> Cancelled</span>
+                            {% else %}
+                                <span class="badge-premium bg-secondary text-white">{{ booking.status }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="py-4 pe-4 text-end border-bottom" style="border-color: #F8FAFC;">
+                            <button class="btn btn-sm btn-icon" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-ellipsis-h"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0" style="border-radius: 8px;">
+                                    <li><a class="dropdown-item" href="{% url 'dashboard:booking_detail' booking.pk %}"><i class="fas fa-eye text-primary me-2"></i> View Details</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'dashboard:booking_update' booking.pk %}"><i class="fas fa-edit text-info me-2"></i> Edit Status</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item text-danger" href="{% url 'dashboard:booking_delete' booking.pk %}"><i class="fas fa-trash-alt me-2"></i> Delete</a></li>
+                            </ul>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center py-5 text-muted">
+                            <i class="fas fa-inbox fa-3x mb-3 text-light"></i>
+                            <h5>No bookings found</h5>
+                            <p>There are no bookings matching your criteria.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        {% if is_paginated %}
+        <nav class="mt-4 pb-4">
+            <ul class="pagination justify-content-center mb-0">
+                {% if page_obj.has_previous %}
+                    <li class="page-item"><a class="page-link text-primary border-0" href="?page={{ page_obj.previous_page_number }}{% if current_q %}&q={{ current_q }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}">Previous</a></li>
+                {% endif %}
+                
+                <li class="page-item active"><span class="page-link bg-primary border-0">{{ page_obj.number }}</span></li>
+                
+                {% if page_obj.has_next %}
+                    <li class="page-item"><a class="page-link text-primary border-0" href="?page={{ page_obj.next_page_number }}{% if current_q %}&q={{ current_q }}{% endif %}{% if current_status %}&status={{ current_status }}{% endif %}">Next</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const searchInput = document.querySelector('input[name="q"]');
+        const statusSelect = document.querySelector('select[name="status"]');
+        const tableContainer = document.getElementById('table-container');
+        
+        let timeout = null;
+
+        function fetchResults() {
+            const q = searchInput.value;
+            const status = statusSelect.value;
+            const url = new URL(window.location.href);
+            
+            url.searchParams.set('q', q);
+            url.searchParams.set('status', status);
+            
+            // Push state so URL updates in browser
+            window.history.pushState({}, '', url);
+
+            fetch(url, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.text())
+            .then(html => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const newTable = doc.getElementById('table-container');
+                if (newTable) {
+                    tableContainer.innerHTML = newTable.innerHTML;
+                }
+            });
+        }
+
+        searchInput.addEventListener('input', function() {
+            clearTimeout(timeout);
+            timeout = setTimeout(fetchResults, 300); // 300ms debounce
+        });
+
+        statusSelect.addEventListener('change', fetchResults);
+    });
+</script>
+{% endblock %}
