@@ -56,7 +56,7 @@
                         <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0" style="border-radius: 8px;">
                             <li><a class="dropdown-item" href="{% url 'dashboard:package_update' package.pk %}"><i class="fas fa-edit text-primary me-2"></i> Edit Package</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item text-danger" href="#"><i class="fas fa-trash-alt me-2"></i> Delete</a></li>
+                            <li><a class="dropdown-item text-danger" href="{% url 'dashboard:package_delete' package.pk %}"><i class="fas fa-trash-alt me-2"></i> Delete</a></li>
                         </ul>
                     </td>
                 </tr>

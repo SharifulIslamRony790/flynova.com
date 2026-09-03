@@ -29,6 +29,7 @@ urlpatterns = [
     path('flights/', views.FlightListView.as_view(), name='flight_list'),
     path('flights/add/', views.FlightCreateView.as_view(), name='flight_create'),
     path('flights/<int:pk>/edit/', views.FlightUpdateView.as_view(), name='flight_update'),
+    path('flights/<int:pk>/delete/', views.FlightDeleteView.as_view(), name='flight_delete'),
     
     # ---------------------------------------------------------
     # 4. PAYMENTS MANAGEMENT
@@ -41,6 +42,7 @@ urlpatterns = [
     path('hotels/', views.HotelListView.as_view(), name='hotel_list'),
     path('hotels/add/', views.HotelCreateView.as_view(), name='hotel_create'),
     path('hotels/<int:pk>/edit/', views.HotelUpdateView.as_view(), name='hotel_update'),
+    path('hotels/<int:pk>/delete/', views.HotelDeleteView.as_view(), name='hotel_delete'),
     
     # ---------------------------------------------------------
     # 6. HOLIDAY PACKAGES MANAGEMENT (CRUD)
@@ -48,6 +50,7 @@ urlpatterns = [
     path('packages/', views.PackageListView.as_view(), name='package_list'),
     path('packages/add/', views.PackageCreateView.as_view(), name='package_create'),
     path('packages/<int:pk>/edit/', views.PackageUpdateView.as_view(), name='package_update'),
+    path('packages/<int:pk>/delete/', views.PackageDeleteView.as_view(), name='package_delete'),
     
     # ---------------------------------------------------------
     # 7. CUSTOMERS MANAGEMENT

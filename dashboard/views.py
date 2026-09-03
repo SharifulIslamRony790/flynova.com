@@ -181,6 +181,19 @@ class FlightUpdateView(UpdateView):
         context['title'] = 'Edit Flight'
         return context
 
+@method_decorator(staff_member_required, name='dispatch')
+class FlightDeleteView(DeleteView):
+    model = Flight
+    success_url = reverse_lazy('dashboard:flight_list')
+    template_name = 'dashboard/confirm_delete.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['item_type'] = "Flight"
+        context['item_name'] = f"{self.object.airline.name} {self.object.flight_number}"
+        context['cancel_url'] = self.success_url
+        return context
+
 # ==========================================
 # 4. PAYMENTS MANAGEMENT
 # ==========================================
@@ -245,6 +258,19 @@ class HotelUpdateView(UpdateView):
         context['cancel_url'] = reverse_lazy('dashboard:hotel_list')
         return context
 
+@method_decorator(staff_member_required, name='dispatch')
+class HotelDeleteView(DeleteView):
+    model = Hotel
+    success_url = reverse_lazy('dashboard:hotel_list')
+    template_name = 'dashboard/confirm_delete.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['item_type'] = "Hotel"
+        context['item_name'] = self.object.name
+        context['cancel_url'] = self.success_url
+        return context
+
 # ==========================================
 # 6. HOLIDAY PACKAGES MANAGEMENT
 # ==========================================
@@ -286,6 +312,19 @@ class PackageUpdateView(UpdateView):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Edit Package'
         context['cancel_url'] = reverse_lazy('dashboard:package_list')
+        return context
+
+@method_decorator(staff_member_required, name='dispatch')
+class PackageDeleteView(DeleteView):
+    model = Package
+    success_url = reverse_lazy('dashboard:package_list')
+    template_name = 'dashboard/confirm_delete.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['item_type'] = "Package"
+        context['item_name'] = self.object.title
+        context['cancel_url'] = self.success_url
         return context
 
 # ==========================================
