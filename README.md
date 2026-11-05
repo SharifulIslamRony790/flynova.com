@@ -7,7 +7,7 @@
   </p>
 
   <p>
-    <a href="https://mdsharifulislamrony790.pythonanywhere.com/"><b>🔴 LIVE DEMO</b></a>
+    <a href="https://flynova-com.onrender.com"><b>🔴 LIVE DEMO</b></a>
   </p>
 
   <p>
